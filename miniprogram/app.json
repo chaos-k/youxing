@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/diagnosis/diagnosis",
+    "pages/quiz/quiz",
+    "pages/result/result",
+    "pages/reports/reports",
+    "pages/mine/mine"
+  ],
+  "window": {
+    "navigationBarTitleText": "有型",
+    "navigationBarBackgroundColor": "#F8F4EF",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8F4EF",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#7B746D",
+    "selectedColor": "#1F3A35",
+    "backgroundColor": "#FFFCF8",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/diagnosis/diagnosis",
+        "text": "诊断"
+      },
+      {
+        "pagePath": "pages/reports/reports",
+        "text": "报告"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

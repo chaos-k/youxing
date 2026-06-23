@@ -1,0 +1,24 @@
+<view class="page mine-page">
+  <view class="panel profile-panel">
+    <text class="profile-name">{{appName}}</text>
+    <text class="profile-meta">你的穿搭与形象建议档案</text>
+  </view>
+
+  <view class="stats-grid">
+    <view class="panel stat-card" bindtap="openReports">
+      <text class="stat-number">{{reportCount}}</text>
+      <text class="stat-label">已保存报告</text>
+    </view>
+    <view class="panel stat-card" bindtap="startDiagnosis">
+      <text class="stat-number">+</text>
+      <text class="stat-label">重新诊断</text>
+    </view>
+  </view>
+
+  <view class="section-title">后续能力</view>
+  <view class="panel roadmap-panel">
+    <view class="roadmap-item" wx:for="{{roadmap}}" wx:key="*this">
+      <text>{{item}}</text>
+    </view>
+  </view>
+</view>

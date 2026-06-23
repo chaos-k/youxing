@@ -1,0 +1,99 @@
+.home-subtitle {
+  display: block;
+  margin-top: 8rpx;
+  color: #7b746d;
+  font-size: 24rpx;
+}
+
+.version {
+  padding: 8rpx 14rpx;
+  color: #5f6f69;
+  background: #edf4ee;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+
+.main-panel {
+  padding: 34rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.main-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.main-title {
+  color: #1f3a35;
+  font-size: 44rpx;
+  font-weight: 800;
+}
+
+.main-desc {
+  color: #776d63;
+  line-height: 1.6;
+}
+
+.trend-row {
+  margin-top: 22rpx;
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.entry-card {
+  min-height: 180rpx;
+  padding: 24rpx 18rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.entry-title {
+  color: #27302d;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.entry-meta {
+  color: #847b72;
+  font-size: 22rpx;
+  line-height: 1.45;
+}
+
+.entry-action {
+  color: #1f3a35;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.latest-card {
+  padding: 26rpx;
+}
+
+.latest-title,
+.latest-time {
+  display: block;
+}
+
+.latest-title {
+  color: #27302d;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.latest-time {
+  margin-top: 8rpx;
+  color: #847b72;
+  font-size: 24rpx;
+}
+
+.latest-tags {
+  margin-top: 18rpx;
+}

@@ -1,0 +1,3790 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>有型 - 穿搭小程序动态 UI 原型</title>
+  <style>
+    :root {
+      --canvas: #e9ebe8;
+      --app: #f8f7f3;
+      --ink: #171b1c;
+      --muted: #6f716d;
+      --soft: #efefea;
+      --line: #d8d5cc;
+      --panel: #fffdf8;
+      --teal: #174d46;
+      --teal-2: #e2eee9;
+      --blue: #34445f;
+      --blue-2: #e4e8ee;
+      --brick: #76343a;
+      --brick-2: #f0dfdc;
+      --mustard: #b7954f;
+      --olive: #63705d;
+      --champagne: #c6ad72;
+      --graphite: #111617;
+      --shadow: 0 28px 80px rgba(17, 22, 23, 0.18);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 26px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(118deg, rgba(17, 22, 23, 0.06), rgba(23, 77, 70, 0.08) 46%, rgba(118, 52, 58, 0.06)),
+        linear-gradient(180deg, #f2f3f0, var(--canvas));
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wrap {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: minmax(330px, 440px) minmax(300px, 1fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .phone {
+      width: min(440px, 100%);
+      height: min(900px, calc(100vh - 52px));
+      min-height: 760px;
+      margin: 0 auto;
+      border: 12px solid #101415;
+      border-radius: 36px;
+      background: var(--app);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 112px;
+      height: 28px;
+      transform: translateX(-50%);
+      border-radius: 0 0 18px 18px;
+      background: #101415;
+      z-index: 30;
+    }
+
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background:
+        linear-gradient(180deg, rgba(255,253,248,0.92), rgba(248,247,243,1) 210px),
+        var(--app);
+    }
+
+    .topbar {
+      height: 78px;
+      padding: 34px 18px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(216, 213, 204, 0.86);
+      background: rgba(248, 247, 243, 0.92);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      color: #fff;
+      background:
+        linear-gradient(140deg, var(--graphite), var(--teal));
+      box-shadow: inset 0 0 0 1px rgba(198, 173, 114, 0.36);
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .brand-text span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .round-btn {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #344042;
+      transition: transform 180ms ease, color 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .round-btn:hover {
+      transform: translateY(-1px);
+      color: var(--teal);
+      border-color: rgba(23, 110, 100, 0.4);
+      background: var(--teal-2);
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: 16px 16px 94px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(24px);
+      transition: opacity 240ms ease, transform 240ms ease;
+      scrollbar-width: none;
+    }
+
+    .screen::-webkit-scrollbar {
+      display: none;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .tabbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 76px;
+      padding: 8px 12px 10px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      border-top: 1px solid rgba(216, 213, 204, 0.9);
+      background: rgba(255,253,248,0.94);
+      backdrop-filter: blur(18px);
+      z-index: 24;
+    }
+
+    .tab {
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      border-radius: var(--radius);
+      color: var(--muted);
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .tab.active {
+      color: var(--teal);
+      background: linear-gradient(180deg, var(--teal-2), rgba(255,253,248,0.72));
+      box-shadow: inset 0 0 0 1px rgba(198, 173, 114, 0.18);
+    }
+
+    .tab:hover {
+      transform: translateY(-1px);
+    }
+
+    .tab span {
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .hero {
+      min-height: 248px;
+      display: grid;
+      grid-template-columns: 1fr 132px;
+      gap: 12px;
+      padding: 18px;
+      border-radius: var(--radius);
+      color: #fff;
+      background:
+        linear-gradient(138deg, #101415, #182420 50%, #24314a);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(198, 173, 114, 0.2);
+      box-shadow: 0 18px 40px rgba(17, 22, 23, 0.18);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -36px;
+      bottom: -36px;
+      width: 164px;
+      height: 164px;
+      background: linear-gradient(140deg, rgba(198, 173, 114, 0.52), rgba(23, 77, 70, 0.08));
+      clip-path: polygon(50% 0, 100% 42%, 83% 100%, 12% 100%, 0 36%);
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+      z-index: 1;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.08);
+      color: #ead9a7;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .hero h1,
+    .result-title,
+    .analysis-card h2 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .hero h1 {
+      margin-top: 16px;
+      font-size: 31px;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin: 10px 0 18px;
+      max-width: 210px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .primary,
+    .secondary,
+    .ghost {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      border-radius: var(--radius);
+      font-weight: 700;
+      white-space: nowrap;
+      transition: transform 180ms ease, box-shadow 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--teal), #0f3833);
+      box-shadow: 0 14px 28px rgba(23, 77, 70, 0.24);
+    }
+
+    .primary:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, #1a5b52, #0d302c);
+      box-shadow: 0 16px 30px rgba(23, 77, 70, 0.3);
+    }
+
+    .secondary {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.92);
+      color: #263033;
+    }
+
+    .secondary:hover {
+      transform: translateY(-1px);
+      border-color: rgba(198, 173, 114, 0.56);
+      color: var(--teal);
+    }
+
+    .ghost {
+      min-height: 36px;
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      font-size: 12px;
+    }
+
+    .primary:active,
+    .secondary:active,
+    .option:active,
+    .mini-card:active,
+    .tab:active {
+      transform: scale(0.98);
+    }
+
+    .wardrobe-art {
+      position: relative;
+      z-index: 1;
+      min-height: 210px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.03)),
+        rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+
+    .rail {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      height: 1px;
+      background: rgba(255,255,255,0.36);
+    }
+
+    .piece {
+      position: absolute;
+      animation: rise 620ms cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .piece.coat {
+      top: 31px;
+      left: 18px;
+      width: 46px;
+      height: 118px;
+      border-radius: 16px 16px 8px 8px;
+      background: #d8e4df;
+      clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%);
+    }
+
+    .piece.shirt {
+      top: 52px;
+      left: 74px;
+      width: 43px;
+      height: 58px;
+      border-radius: 8px;
+      background: #efdfbe;
+      animation-delay: 80ms;
+    }
+
+    .piece.pants {
+      top: 117px;
+      left: 72px;
+      width: 50px;
+      height: 64px;
+      background: #496b94;
+      clip-path: polygon(8% 0, 92% 0, 100% 100%, 62% 100%, 50% 26%, 38% 100%, 0 100%);
+      animation-delay: 160ms;
+    }
+
+    .piece.bag {
+      top: 144px;
+      left: 20px;
+      width: 38px;
+      height: 32px;
+      border: 3px solid #d6b24e;
+      border-top-color: transparent;
+      border-radius: 6px;
+      background: rgba(214, 178, 78, 0.2);
+      animation-delay: 240ms;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(16px) rotate(-3deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotate(0);
+      }
+    }
+
+    .section-head {
+      margin: 20px 0 10px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .learn-grid,
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .learn-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .learn-tab {
+      min-height: 42px;
+      padding: 0 8px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(255,253,248,0.82);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+      transition: transform 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .learn-tab.active {
+      color: var(--teal);
+      border-color: rgba(198, 173, 114, 0.48);
+      background: linear-gradient(180deg, var(--teal-2), rgba(255,253,248,0.72));
+      font-weight: 700;
+    }
+
+    .learn-tab:hover {
+      transform: translateY(-1px);
+    }
+
+    .learn-card,
+    .feature,
+    .option,
+    .report-row,
+    .panel,
+    .mini-card,
+    .rule-card,
+    .route-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 24px rgba(17, 22, 23, 0.055);
+    }
+
+    .learn-card {
+      min-height: 132px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      text-align: left;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .learn-card::before {
+      content: "";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 0;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), rgba(198, 173, 114, 0.72), rgba(23, 77, 70, 0));
+    }
+
+    .learn-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(198, 173, 114, 0.5);
+      box-shadow: 0 16px 30px rgba(17, 22, 23, 0.1);
+    }
+
+    .learn-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .learn-index {
+      color: var(--teal);
+      font-weight: 800;
+    }
+
+    .learn-card strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .learn-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.52;
+    }
+
+    .learn-action {
+      margin-top: 2px;
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .term-drawer {
+      position: absolute;
+      inset: 0;
+      z-index: 80;
+      background: rgba(18, 24, 25, 0.42);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+
+    .term-drawer.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .term-sheet {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      max-height: 72%;
+      overflow-y: auto;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 22px 60px rgba(20, 24, 26, 0.22);
+      transform: translateY(18px);
+      transition: transform 220ms ease;
+    }
+
+    .term-drawer.open .term-sheet {
+      transform: translateY(0);
+    }
+
+    .term-sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .term-sheet small {
+      display: block;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .term-sheet h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .term-close {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #f7f9f8;
+      color: #334042;
+    }
+
+    .term-summary {
+      margin: 0 0 12px;
+      color: #465052;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .term-detail-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .term-detail {
+      padding: 10px 11px;
+      border-radius: var(--radius);
+      background: #f2f5f4;
+      color: #465052;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .term-detail strong {
+      display: block;
+      color: var(--ink);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .feature {
+      min-height: 132px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,253,248,0.98), rgba(246,245,240,0.96));
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .feature::after {
+      content: "";
+      position: absolute;
+      left: 15px;
+      right: 15px;
+      bottom: 0;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(198, 173, 114, 0.58), rgba(23, 77, 70, 0));
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-2px);
+      border-color: rgba(198, 173, 114, 0.52);
+      box-shadow: 0 16px 30px rgba(17, 22, 23, 0.1);
+    }
+
+    .feature:hover::after {
+      opacity: 1;
+    }
+
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      border: 1px solid rgba(198, 173, 114, 0.26);
+      color: var(--teal);
+      background: rgba(226, 238, 233, 0.72);
+    }
+
+    .feature:nth-child(2) .feature-icon {
+      color: var(--brick);
+      background: var(--brick-2);
+    }
+
+    .feature:nth-child(3) .feature-icon {
+      color: var(--blue);
+      background: var(--blue-2);
+    }
+
+    .feature:nth-child(4) .feature-icon {
+      color: #8b6f1d;
+      background: #f8efd1;
+    }
+
+    .feature h3 {
+      margin: 14px 0 5px;
+      font-size: 15px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .diagnosis-top {
+      display: grid;
+      gap: 12px;
+      padding: 15px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .progress-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .progress-meta strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e7ece9;
+    }
+
+    .progress-fill {
+      width: 8%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), var(--mustard));
+      transition: width 260ms ease;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      transition: transform 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .chip.active {
+      color: var(--teal);
+      background: var(--teal-2);
+      border-color: rgba(23, 110, 100, 0.38);
+    }
+
+    .question-panel {
+      margin-top: 14px;
+      min-height: 502px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .question-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .question-hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .options.compact {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .option {
+      min-height: 80px;
+      padding: 12px;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: rgba(23, 110, 100, 0.42);
+    }
+
+    .option.selected {
+      border-color: var(--teal);
+      background: linear-gradient(180deg, var(--panel), var(--teal-2));
+      box-shadow: 0 12px 20px rgba(23, 77, 70, 0.12);
+    }
+
+    .option.selected::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 5px rgba(23, 77, 70, 0.12);
+    }
+
+    .option strong {
+      display: block;
+      padding-right: 17px;
+      font-size: 14px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .option span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.38;
+    }
+
+    .question-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .analysis-screen {
+      min-height: 640px;
+      display: grid;
+      place-items: center;
+    }
+
+    .analysis-card {
+      width: 100%;
+      padding: 22px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .analysis-ring {
+      width: 142px;
+      height: 142px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      position: relative;
+      background:
+        conic-gradient(var(--teal) 0 96deg, var(--blue) 96deg 178deg, var(--mustard) 178deg 260deg, var(--brick) 260deg 330deg, #dce2df 330deg);
+      animation: spin 1.1s linear infinite;
+    }
+
+    .analysis-ring::before {
+      content: "";
+      position: absolute;
+      inset: 17px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .analysis-ring::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: var(--teal);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .analysis-card h2 {
+      text-align: center;
+      font-size: 21px;
+      line-height: 1.25;
+    }
+
+    .analysis-card p {
+      margin: 8px auto 0;
+      max-width: 280px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .match-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .match-line {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 10px;
+      border-radius: var(--radius);
+      background: #f2f5f4;
+      color: #3f494b;
+      font-size: 12px;
+      opacity: 0.45;
+      transition: opacity 220ms ease, transform 220ms ease, background 220ms ease;
+    }
+
+    .match-line.live {
+      opacity: 1;
+      transform: translateX(2px);
+      background: var(--teal-2);
+    }
+
+    .match-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 5px rgba(23, 110, 100, 0.12);
+    }
+
+    .result-hero {
+      border-radius: var(--radius);
+      color: #fff;
+      padding: 18px;
+      background:
+        linear-gradient(135deg, #101415, #182520 56%, #26314b);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(198, 173, 114, 0.22);
+      box-shadow: 0 18px 40px rgba(17, 22, 23, 0.18);
+    }
+
+    .result-hero::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -42px;
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(145deg, rgba(198,173,114,0.5), rgba(23,77,70,0.08));
+      clip-path: polygon(50% 0, 100% 40%, 82% 100%, 14% 100%, 0 38%);
+    }
+
+    .result-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .score-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(198, 173, 114, 0.34);
+      background: rgba(255,255,255,0.1);
+      text-align: center;
+    }
+
+    .score-badge strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .score-badge span {
+      display: block;
+      margin-top: 3px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .result-title {
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+      font-size: 27px;
+      line-height: 1.16;
+    }
+
+    .result-desc {
+      margin: 10px 0 0;
+      max-width: 292px;
+      position: relative;
+      z-index: 1;
+      color: rgba(255,255,255,0.74);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .signal-row {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .signal {
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.11);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.84);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .daily-card {
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(255,253,248,0.98), rgba(241,241,235,0.94));
+      box-shadow: 0 14px 30px rgba(17, 22, 23, 0.075);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .daily-card::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      right: 15px;
+      top: 0;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--champagne), rgba(23, 77, 70, 0));
+    }
+
+    .daily-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .daily-top small {
+      display: block;
+      color: var(--teal);
+      font-weight: 800;
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .daily-top strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .daily-weather {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--blue-2);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .daily-lines {
+      display: grid;
+      gap: 7px;
+      color: #465052;
+      font-size: 12px;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    .daily-line {
+      display: grid;
+      grid-template-columns: 10px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .daily-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .look-switcher,
+    .feedback-panel,
+    .style-file {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 10px 24px rgba(17, 22, 23, 0.055);
+    }
+
+    .switcher-head,
+    .feedback-head,
+    .style-file-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .switcher-head h3,
+    .feedback-head h3,
+    .style-file-head h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .switcher-head span,
+    .feedback-head span,
+    .style-file-head span {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .variant-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .variant-card {
+      min-height: 126px;
+      padding: 11px;
+      display: grid;
+      align-content: start;
+      gap: 7px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #f7f5ef;
+      text-align: left;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .variant-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(23, 110, 100, 0.38);
+    }
+
+    .variant-card.active {
+      border-color: var(--teal);
+      background: linear-gradient(180deg, var(--teal-2), #f4f2ea);
+      box-shadow: 0 10px 18px rgba(23, 110, 100, 0.1);
+    }
+
+    .variant-card small {
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .variant-card strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.28;
+    }
+
+    .variant-card span {
+      color: #596367;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .feedback-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feedback-chip {
+      min-height: 34px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #f7f5ef;
+      color: #465052;
+      font-size: 12px;
+      transition: transform 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .feedback-chip.active {
+      color: var(--teal);
+      border-color: rgba(23, 110, 100, 0.38);
+      background: var(--teal-2);
+      font-weight: 700;
+    }
+
+    .feedback-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .file-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .file-item {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: #f4f7f5;
+      color: #465052;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .file-item strong {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .file-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .file-tag {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-2);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .look-panel {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 12px;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .figure {
+      min-height: 180px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #e8efec, #fafbf9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .figure-hair,
+    .figure-head,
+    .figure-neck,
+    .figure-top,
+    .figure-bottom,
+    .figure-shoe {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .figure-hair {
+      top: 11px;
+      width: 52px;
+      height: 58px;
+      border-radius: 48% 48% 36% 36%;
+      background: #2c2725;
+      clip-path: polygon(8% 24%, 50% 0, 92% 24%, 84% 100%, 16% 100%);
+      z-index: 2;
+      transition: height 240ms ease, clip-path 240ms ease;
+    }
+
+    .figure-head {
+      top: 21px;
+      width: 36px;
+      height: 42px;
+      border-radius: 42% 42% 48% 48%;
+      background: #d3a17c;
+      z-index: 1;
+    }
+
+    .figure-neck {
+      top: 58px;
+      width: 18px;
+      height: 22px;
+      background: #d3a17c;
+    }
+
+    .figure-top {
+      top: 75px;
+      width: 72px;
+      height: 62px;
+      border-radius: 18px 18px 8px 8px;
+      background: #dbe7e2;
+      clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%);
+      transition: background 260ms ease, width 260ms ease;
+    }
+
+    .figure-bottom {
+      top: 130px;
+      width: 64px;
+      height: 52px;
+      background: #496b94;
+      clip-path: polygon(8% 0, 92% 0, 100% 100%, 62% 100%, 50% 24%, 38% 100%, 0 100%);
+      transition: background 260ms ease, clip-path 260ms ease;
+    }
+
+    .figure-shoe {
+      bottom: 11px;
+      width: 54px;
+      height: 10px;
+      border-radius: 999px 999px 3px 3px;
+      background: #1b2022;
+    }
+
+    .look-copy {
+      display: grid;
+      gap: 9px;
+      align-content: center;
+    }
+
+    .look-line {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 8px;
+      align-items: start;
+      color: #465052;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 4px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    .dot.blue {
+      background: var(--blue);
+    }
+
+    .dot.brick {
+      background: var(--brick);
+    }
+
+    .dot.mustard {
+      background: var(--mustard);
+    }
+
+    .advice-stack {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .panel {
+      padding: 14px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: cardIn 420ms ease forwards;
+    }
+
+    .panel:nth-child(2) { animation-delay: 60ms; }
+    .panel:nth-child(3) { animation-delay: 120ms; }
+    .panel:nth-child(4) { animation-delay: 180ms; }
+    .panel:nth-child(5) { animation-delay: 240ms; }
+
+    @keyframes cardIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .tag {
+      min-height: 22px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: var(--teal-2);
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .panel p {
+      margin: 0;
+      color: #475153;
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .palette {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .swatch {
+      width: 31px;
+      height: 31px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px var(--line);
+    }
+
+    .route-grid {
+      display: grid;
+      gap: 9px;
+    }
+
+    .route-card {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 70px;
+      padding: 10px;
+    }
+
+    .route-rank {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      color: #fff;
+      background: var(--blue);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .route-card:first-child .route-rank {
+      background: var(--teal);
+    }
+
+    .route-card strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .route-card span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .route-score {
+      color: var(--teal);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 56px 1fr 34px;
+      gap: 8px;
+      align-items: center;
+      color: #465052;
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e7ece9;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), var(--mustard));
+      transition: width 420ms ease;
+    }
+
+    .rule-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .rule-card {
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 9px;
+      align-items: start;
+    }
+
+    .rule-points {
+      width: 34px;
+      min-height: 34px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--teal);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .rule-card:nth-child(2n) .rule-points {
+      background: var(--blue);
+    }
+
+    .rule-card strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .rule-card span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .report-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 54px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 76px;
+      padding: 11px;
+      text-align: left;
+      margin-bottom: 10px;
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+
+    .report-row:hover {
+      transform: translateY(-1px);
+      border-color: rgba(64, 95, 145, 0.42);
+    }
+
+    .thumb {
+      width: 54px;
+      height: 58px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(160deg, rgba(23,110,100,0.26), rgba(214,178,78,0.22)),
+        #f2f4f3;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .thumb::before {
+      content: "";
+      position: absolute;
+      top: 9px;
+      left: 14px;
+      width: 25px;
+      height: 42px;
+      border-radius: 10px 10px 5px 5px;
+      background: var(--blue);
+      clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+    }
+
+    .report-row strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .report-row small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .profile-card {
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 50% 34%, #d3a17c 0 18px, transparent 19px),
+        linear-gradient(180deg, #2c2725 0 47%, #176e64 48%);
+    }
+
+    .profile-head h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .profile-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stats {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat {
+      min-height: 62px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      background: #f0f4f2;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      min-height: 50px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 92px;
+      min-width: 156px;
+      min-height: 40px;
+      padding: 0 14px;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, 18px);
+      border-radius: 999px;
+      background: rgba(20, 24, 26, 0.92);
+      color: #fff;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease, transform 220ms ease;
+      z-index: 60;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .side {
+      padding: 22px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(220,226,223,0.95);
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 16px 45px rgba(24, 32, 35, 0.09);
+    }
+
+    .side h2 {
+      margin: 0 0 10px;
+      font-size: 27px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .side p {
+      margin: 0;
+      color: #4f595b;
+      font-size: 14px;
+      line-height: 1.68;
+    }
+
+    .side-grid {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .side-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: #3f494b;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .side-num {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .side-item:nth-child(2) .side-num {
+      background: var(--blue);
+    }
+
+    .side-item:nth-child(3) .side-num {
+      background: var(--brick);
+    }
+
+    .side-actions {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        padding: 0;
+        align-items: start;
+      }
+
+      .wrap {
+        display: block;
+      }
+
+      .phone {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .phone::before,
+      .side {
+        display: none;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .hero,
+      .look-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .wardrobe-art {
+        min-height: 156px;
+      }
+
+      .options,
+      .options.compact,
+      .learn-grid,
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .learn-tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .variant-row,
+      .daily-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 27px;
+      }
+
+      .question-title {
+        font-size: 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="phone" aria-label="有型小程序动态原型">
+      <div class="app">
+        <header class="topbar">
+          <div class="brand">
+            <div class="brand-mark">型</div>
+            <div class="brand-text">
+              <strong>有型</strong>
+              <span>形象穿搭诊断</span>
+            </div>
+          </div>
+          <div class="top-actions">
+            <button class="round-btn" type="button" aria-label="搜索" title="搜索">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+            </button>
+            <button class="round-btn" type="button" aria-label="消息" title="消息">
+              <svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="viewport">
+          <section class="screen active" data-screen="home">
+            <div class="hero">
+              <div class="hero-copy">
+                <div>
+                  <span class="kicker">多维画像匹配</span>
+                  <h1>找到真正<br>适合你的穿搭</h1>
+                  <p>从脸型、肤色、比例、场景和风格偏好综合判断。</p>
+                </div>
+                <button class="primary" type="button" data-start>
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                  开始专业诊断
+                </button>
+              </div>
+              <div class="wardrobe-art" aria-hidden="true">
+                <div class="rail"></div>
+                <div class="piece coat"></div>
+                <div class="piece shirt"></div>
+                <div class="piece pants"></div>
+                <div class="piece bag"></div>
+              </div>
+            </div>
+
+            <div class="daily-card">
+              <div class="daily-top">
+                <div>
+                  <small>今日穿搭</small>
+                  <strong>通勤半正式，清爽但不拘谨</strong>
+                </div>
+                <div class="daily-weather">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v2"></path><path d="M12 19v2"></path><path d="m4.2 4.2 1.4 1.4"></path><path d="m18.4 18.4 1.4 1.4"></path><circle cx="12" cy="12" r="4"></circle></svg>
+                  温和
+                </div>
+              </div>
+              <div class="daily-lines">
+                <div class="daily-line"><span class="dot"></span><span>米白衬衫、短西装和高腰直筒裤，保持精神感。</span></div>
+                <div class="daily-line"><span class="dot blue"></span><span>鞋包用黑色或深咖压住整体，避免过甜。</span></div>
+              </div>
+              <div class="daily-actions">
+                <button class="primary" type="button" data-result>
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                  看今天这套
+                </button>
+                <button class="secondary" type="button" data-start>
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="M5 8h14"></path><path d="M7 16h10"></path></svg>
+                  换个场景
+                </button>
+              </div>
+            </div>
+
+            <div class="section-head">
+              <h2>诊断前先了解</h2>
+              <span id="learnCategoryHint">脸型五官</span>
+            </div>
+            <div class="learn-tabs" id="learnTabs"></div>
+            <div class="learn-grid" id="learnGrid"></div>
+
+            <div class="section-head">
+              <h2>常用入口</h2>
+              <span>核心功能</span>
+            </div>
+            <div class="feature-grid">
+              <button class="feature" type="button" data-start="full">
+                <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M6 7l1 13h10l1-13"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg></div>
+                <div><h3>完整诊断</h3><p>性别、年龄、脸型、体型、场景合并判断。</p></div>
+              </button>
+              <button class="feature" type="button" data-start="hair">
+                <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M6 4c4 0 6 3 6 8s-2 8-6 8"></path><path d="M18 4c-4 0-6 3-6 8s2 8 6 8"></path></svg></div>
+                <div><h3>发型定位</h3><p>只看脸型、颈长、发量和年龄气质。</p></div>
+              </button>
+              <button class="feature" type="button" data-start="proportion">
+                <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="M5 8h14"></path><path d="M7 16h10"></path></svg></div>
+                <div><h3>身形版型</h3><p>根据肩线、腰线、腿型推荐上衣和裤裙版型。</p></div>
+              </button>
+              <button class="feature" type="button" data-tab="reports">
+                <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M14 3v4h4"></path><path d="M9 13h6"></path></svg></div>
+                <div><h3>我的报告</h3><p>保留每次画像与推荐依据。</p></div>
+              </button>
+            </div>
+
+            <div class="section-head">
+              <h2>最近报告</h2>
+              <span>已保存</span>
+            </div>
+            <button class="report-row" type="button" data-result>
+              <div class="thumb"></div>
+              <div>
+                <strong>清爽通勤路线</strong>
+                <small>匹配度 88 · 14 条依据</small>
+              </div>
+              <span>›</span>
+            </button>
+          </section>
+
+          <section class="screen" data-screen="diagnosis">
+            <div class="diagnosis-top">
+              <div class="progress-meta">
+                <strong id="diagnosisTitle">专业诊断</strong>
+                <span id="stepLabel">1 / 15</span>
+              </div>
+              <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+              <div class="chip-row" id="summaryChips"></div>
+            </div>
+
+            <div class="question-panel">
+              <div>
+                <h2 class="question-title" id="questionTitle"></h2>
+                <p class="question-hint" id="questionHint"></p>
+                <div class="options" id="options"></div>
+              </div>
+              <div class="question-actions">
+                <button class="secondary" type="button" id="prevBtn">
+                  <svg viewBox="0 0 24 24"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg>
+                  上一步
+                </button>
+                <button class="primary" type="button" id="nextBtn">
+                  下一步
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="analysis">
+            <div class="analysis-screen">
+              <div class="analysis-card">
+                <div class="analysis-ring"></div>
+                <h2>正在分析有型画像</h2>
+                <p id="analysisText">计算脸型与发型适配度</p>
+                <div class="match-list" id="matchList"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="result">
+            <div class="result-hero">
+              <div class="result-topline">
+                <span class="kicker">推荐路线</span>
+                <div class="score-badge"><div><strong id="matchScore">88</strong><span>匹配分</span></div></div>
+              </div>
+              <h2 class="result-title" id="resultTitle">清爽通勤路线</h2>
+              <p class="result-desc" id="resultDesc">用清晰肩线、低饱和配色和高腰线建立干净利落的整体比例。</p>
+              <div class="signal-row" id="signalRow"></div>
+            </div>
+
+            <div class="result-actions">
+              <button class="primary" type="button" id="saveBtn">
+                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>
+                保存报告
+              </button>
+              <button class="secondary" type="button" data-start>
+                <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg>
+                重新诊断
+              </button>
+            </div>
+
+            <div class="look-panel">
+              <div class="figure" aria-hidden="true">
+                <div class="figure-hair" id="figureHair"></div>
+                <div class="figure-head"></div>
+                <div class="figure-neck"></div>
+                <div class="figure-top" id="figureTop"></div>
+                <div class="figure-bottom" id="figureBottom"></div>
+                <div class="figure-shoe"></div>
+              </div>
+              <div class="look-copy">
+                <div class="look-line"><span class="dot"></span><span id="lookHair">锁骨发 + 八字刘海，增加纵向线条。</span></div>
+                <div class="look-line"><span class="dot blue"></span><span id="lookOutfit">米白衬衫 + 高腰直筒裤 + 乐福鞋。</span></div>
+                <div class="look-line"><span class="dot brick"></span><span id="lookAvoid">避开低腰裤和厚重齐刘海。</span></div>
+                <div class="look-line"><span class="dot mustard"></span><span id="lookWhy">推荐依据来自脸型、比例和场景权重。</span></div>
+              </div>
+            </div>
+
+            <div class="look-switcher">
+              <div class="switcher-head">
+                <h3>三套穿法</h3>
+                <span>左右对比，选最想穿的方向</span>
+              </div>
+              <div class="variant-row" id="variantRow"></div>
+            </div>
+
+            <div class="feedback-panel">
+              <div class="feedback-head">
+                <h3>调校这份建议</h3>
+                <span>让有型更懂你</span>
+              </div>
+              <div class="feedback-grid">
+                <button class="feedback-chip" type="button" data-feedback="太正式">太正式</button>
+                <button class="feedback-chip" type="button" data-feedback="想更显高">想更显高</button>
+                <button class="feedback-chip" type="button" data-feedback="想更温柔">想更温柔</button>
+                <button class="feedback-chip" type="button" data-feedback="颜色不喜欢">颜色不喜欢</button>
+                <button class="feedback-chip" type="button" data-feedback="不够日常">不够日常</button>
+              </div>
+              <p class="feedback-note" id="feedbackNote">点击后会记录偏好，并给出下一次调整方向。</p>
+            </div>
+
+            <div class="advice-stack" id="adviceStack"></div>
+          </section>
+
+          <section class="screen" data-screen="reports">
+            <div class="section-head" style="margin-top:0">
+              <h2>我的报告</h2>
+              <span>演示数据</span>
+            </div>
+            <button class="report-row" type="button" data-result>
+              <div class="thumb"></div>
+              <div>
+                <strong>清爽通勤路线</strong>
+                <small>匹配度 88 · 14 条依据</small>
+              </div>
+              <span>›</span>
+            </button>
+            <button class="report-row" type="button" data-result>
+              <div class="thumb" style="background:linear-gradient(160deg, rgba(170,85,71,.25), rgba(64,95,145,.18)), #f4f5f3"></div>
+              <div>
+                <strong>柔和约会路线</strong>
+                <small>匹配度 84 · 11 条依据</small>
+              </div>
+              <span>›</span>
+            </button>
+
+            <div class="section-head">
+              <h2>画像摘要</h2>
+              <span>最近一次</span>
+            </div>
+            <div class="chip-row">
+              <button class="chip active" type="button">女性</button>
+              <button class="chip active" type="button">初入职场23-30</button>
+              <button class="chip active" type="button">圆脸</button>
+              <button class="chip active" type="button">黄二白</button>
+              <button class="chip active" type="button">A型</button>
+              <button class="chip active" type="button">通勤</button>
+              <button class="chip" type="button">显高</button>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="profile">
+            <div class="profile-card">
+              <div class="profile-head">
+                <div class="avatar"></div>
+                <div>
+                  <h2>我的有型档案</h2>
+                  <p>女性 · 初入职场23-30 · 圆脸 · 黄二白 · A型 · 通勤偏好</p>
+                </div>
+              </div>
+              <div class="stats">
+                <div class="stat"><strong>完整</strong><span>画像状态</span></div>
+                <div class="stat"><strong>18</strong><span>保存报告</span></div>
+                <div class="stat"><strong>4</strong><span>偏好风格</span></div>
+              </div>
+            </div>
+            <div class="style-file">
+              <div class="style-file-head">
+                <h3>长期适合项</h3>
+                <span>持续沉淀</span>
+              </div>
+              <div class="file-grid">
+                <div class="file-item"><strong>发型</strong><span>锁骨发、八字刘海、轻层次，优先增加纵向线条。</span></div>
+                <div class="file-item"><strong>颜色</strong><span>米白、鼠尾草绿、雾蓝、炭灰更显气色。</span></div>
+                <div class="file-item"><strong>版型</strong><span>有肩线短外套、高腰直筒裤、A字裙、微喇裤。</span></div>
+                <div class="file-item"><strong>避雷</strong><span>低腰裤、胯部复杂装饰、厚重齐刘海、荧光色大面积使用。</span></div>
+              </div>
+            </div>
+            <div class="style-file">
+              <div class="style-file-head">
+                <h3>偏好调校</h3>
+                <span>最近反馈</span>
+              </div>
+              <div class="file-tag-row">
+                <span class="file-tag">想更显高</span>
+                <span class="file-tag">通勤为主</span>
+                <span class="file-tag">低饱和色</span>
+                <span class="file-tag">不想太正式</span>
+              </div>
+            </div>
+            <div class="mini-list">
+              <div class="mini-card"><span>个人画像</span><span>›</span></div>
+              <div class="mini-card"><span>报告收藏</span><span>›</span></div>
+              <div class="mini-card"><span>建议反馈</span><span>›</span></div>
+              <div class="mini-card"><span>隐私设置</span><span>›</span></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="tabbar" aria-label="底部导航">
+          <button class="tab active" type="button" data-tab="home">
+            <svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8"></path><path d="M5 10v10h14V10"></path></svg>
+            <span>首页</span>
+          </button>
+          <button class="tab" type="button" data-tab="diagnosis">
+            <svg viewBox="0 0 24 24"><path d="M9 3h6l1 4 4 2-2 4 2 4-4 2-1 4H9l-1-4-4-2 2-4-2-4 4-2z"></path><path d="M9 12h6"></path></svg>
+            <span>诊断</span>
+          </button>
+          <button class="tab" type="button" data-tab="reports">
+            <svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M14 3v4h4"></path><path d="M9 13h6"></path></svg>
+            <span>报告</span>
+          </button>
+          <button class="tab" type="button" data-tab="profile">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+            <span>我的</span>
+          </button>
+        </nav>
+        <div class="toast" id="toast">已保存</div>
+        <div class="term-drawer" id="termDrawer" aria-hidden="true">
+          <div class="term-sheet" role="dialog" aria-modal="true" aria-labelledby="termTitle">
+            <div class="term-sheet-head">
+              <div>
+                <small id="termCategory">脸型五官</small>
+                <h3 id="termTitle">柔和</h3>
+              </div>
+              <button class="term-close" type="button" data-close-term aria-label="关闭">
+                <svg viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+              </button>
+            </div>
+            <p class="term-summary" id="termSummary"></p>
+            <div class="term-detail-list" id="termDetails"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <h2>有型原型已升级</h2>
+      <p>这版把小程序从简单问卷提升为多维画像诊断。系统会根据用户选项计算候选风格路线、推荐模块和避雷项，结果页能看到每条建议背后的命中依据。</p>
+      <div class="side-grid">
+        <div class="side-item"><span class="side-num">1</span><span>问卷扩展到性别表达、年龄阶段、脸型、颈长、肩线、体型、腰线、腿型、肤色、发量、场景、正式度、气候、目标效果等维度。</span></div>
+        <div class="side-item"><span class="side-num">2</span><span>推荐不是单项映射，而是候选路线加权评分，并输出前三名路线和匹配分。</span></div>
+        <div class="side-item"><span class="side-num">3</span><span>结果页新增推荐依据、画像雷达、色彩方案、多套搭配和避雷理由，更接近真实产品体验。</span></div>
+      </div>
+      <div class="side-actions">
+        <button class="secondary" type="button" data-start>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+          体验新版
+        </button>
+        <button class="secondary" type="button" data-result>
+          <svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M14 3v4h4"></path></svg>
+          看结果页
+        </button>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const learnCategories = [
+      {
+        id: "face",
+        title: "脸型五官",
+        terms: [
+          {
+            title: "柔和",
+            type: "五官轮廓",
+            summary: "面部边缘圆润，眉眼鼻唇的转折不强，整体亲和感更明显。",
+            details: [
+              ["怎么判断", "下颌角不突出，鼻梁和眉眼边界不锋利，笑起来面部线条更圆润。"],
+              ["影响推荐", "适合低对比色、弧线发型、柔软材质和不过分硬挺的单品。"],
+              ["常见误区", "柔和不等于幼态，也可以通过干净剪裁做出轻熟和高级感。"]
+            ]
+          },
+          {
+            title: "清晰",
+            type: "五官轮廓",
+            summary: "下颌、鼻梁、眉眼边界更明确，五官存在感和线条感更强。",
+            details: [
+              ["怎么判断", "侧脸骨点更明显，眉眼或鼻梁边界清楚，整体比圆润型更有利落感。"],
+              ["影响推荐", "适合直线剪裁、清爽露肤、利落发型和更克制的配饰。"],
+              ["常见误区", "清晰不等于严肃，降低颜色对比后也能做柔和路线。"]
+            ]
+          },
+          {
+            title: "明艳",
+            type: "视觉存在感",
+            summary: "五官对比度较高，眼鼻唇更容易成为第一视觉焦点。",
+            details: [
+              ["怎么判断", "素颜状态下五官仍然醒目，深浅对比强，适合承接更明确的颜色。"],
+              ["影响推荐", "可使用更清楚的主色、精致配饰和有轮廓感的发型。"],
+              ["常见误区", "明艳不一定要浓妆，高质感基础款也能突出优势。"]
+            ]
+          },
+          {
+            title: "面部量感",
+            type: "大小与分量",
+            summary: "指五官大小、面部骨架和留白共同形成的视觉分量。",
+            details: [
+              ["怎么判断", "五官偏大、骨架感强或留白少，通常量感更大；反之更轻。"],
+              ["影响推荐", "量感大适合稍有存在感的配饰和面料，量感小适合轻巧细节。"],
+              ["常见误区", "量感不是胖瘦判断，而是视觉承载力判断。"]
+            ]
+          }
+        ]
+      },
+      {
+        id: "body",
+        title: "身材比例",
+        terms: [
+          {
+            title: "肩线",
+            type: "上半身轮廓",
+            summary: "观察肩部是窄、宽、平还是溜肩，用来决定上装结构感。",
+            details: [
+              ["怎么判断", "看肩点位置、肩颈斜度和穿T恤时肩部是否容易塌。"],
+              ["影响推荐", "窄肩和溜肩更适合清晰肩线，宽肩更适合纵向开襟和弱化肩部装饰。"],
+              ["穿搭应用", "短西装、衬衫、夹克、落肩卫衣都需要按肩线选择。"]
+            ]
+          },
+          {
+            title: "腰线",
+            type: "上下身比例",
+            summary: "看上短下长和收腰位置是否明确，决定上衣长度和下装腰位。",
+            details: [
+              ["怎么判断", "自然站立时腰部转折是否明显，穿裙装时腰节是否容易被看见。"],
+              ["影响推荐", "腰线不明显时，用短上衣、高腰下装、腰带或外套敞穿制造比例。"],
+              ["穿搭应用", "显高、显利落、显精神，通常都离不开明确腰线。"]
+            ]
+          },
+          {
+            title: "颈长",
+            type: "领口与发型",
+            summary: "颈部长度会影响领口、项链、围巾和发长的选择。",
+            details: [
+              ["怎么判断", "看下巴到锁骨的距离，以及穿高领时是否显局促。"],
+              ["影响推荐", "颈短适合V领、U领和锁骨附近发长；颈长可以承接高领和丝巾。"],
+              ["穿搭应用", "同一件上衣，领口变化会明显影响脸和肩颈比例。"]
+            ]
+          },
+          {
+            title: "视觉重心",
+            type: "身形比例",
+            summary: "指别人第一眼更容易看向上半身、腰部还是下半身。",
+            details: [
+              ["怎么判断", "看颜色、图案、装饰和身体量感集中在哪里。"],
+              ["影响推荐", "想显高或修饰下半身时，通常要把重心上移并减少下装复杂度。"],
+              ["穿搭应用", "耳饰、领口、短外套、上浅下深都可以改变视觉重心。"]
+            ]
+          }
+        ]
+      },
+      {
+        id: "color",
+        title: "色彩气色",
+        terms: [
+          {
+            title: "肤色冷暖",
+            type: "色彩方向",
+            summary: "不是看白不白，而是看冷净色或暖柔色哪类更显气色。",
+            details: [
+              ["怎么判断", "冷调穿雾蓝、冷灰更干净；暖调穿奶茶、燕麦更柔和。"],
+              ["影响推荐", "影响主色、内搭、发色、口红和金银配饰选择。"],
+              ["常见误区", "黄皮不一定都是暖调，关键看哪类颜色更显精神。"]
+            ]
+          },
+          {
+            title: "明度",
+            type: "颜色深浅",
+            summary: "颜色的深浅程度，会影响轻盈感、正式感和轮廓清晰度。",
+            details: [
+              ["怎么判断", "白、浅灰、浅蓝明度高；黑、藏蓝、深咖明度低。"],
+              ["影响推荐", "浅色更轻盈亲和，深色更稳重收敛。"],
+              ["穿搭应用", "上浅下深更稳，上深下浅更有造型感但更挑比例。"]
+            ]
+          },
+          {
+            title: "饱和度",
+            type: "颜色浓淡",
+            summary: "颜色鲜艳程度越高，视觉存在感越强，也越挑肤色和场景。",
+            details: [
+              ["怎么判断", "荧光色、高亮玫红、正红饱和度高；雾蓝、鼠尾草绿饱和度低。"],
+              ["影响推荐", "通勤和面试更适合低饱和，拍照和聚会可适当提高饱和度。"],
+              ["穿搭应用", "不确定时，把高饱和色放在包、鞋、丝巾等小面积位置。"]
+            ]
+          },
+          {
+            title: "对比度",
+            type: "整体清晰度",
+            summary: "上下装、肤色和发色之间的深浅差异，会影响风格强弱。",
+            details: [
+              ["怎么判断", "黑白搭配对比高，同色系搭配对比低。"],
+              ["影响推荐", "五官清晰可承接较高对比，柔和轮廓更适合中低对比。"],
+              ["穿搭应用", "想温柔就降对比，想干练就提高线条和明暗边界。"]
+            ]
+          }
+        ]
+      },
+      {
+        id: "scene",
+        title: "场景面料",
+        terms: [
+          {
+            title: "正式度",
+            type: "场景判断",
+            summary: "决定衣服需要多克制、多精神，以及装饰能保留多少。",
+            details: [
+              ["怎么判断", "面试、会议偏正式；约会、旅行偏轻松；通勤介于中间。"],
+              ["影响推荐", "正式度越高，颜色越克制，面料越挺括，鞋包越简洁。"],
+              ["穿搭应用", "同一件衬衫，配西裤是正式，配牛仔裤是半正式。"]
+            ]
+          },
+          {
+            title: "面料垂感",
+            type: "线条表现",
+            summary: "面料是挺、垂、软还是蓬，会直接改变身体轮廓。",
+            details: [
+              ["怎么判断", "西装料偏挺，醋酸和雪纺偏垂，厚针织偏软且有体积。"],
+              ["影响推荐", "想利落用挺括，想温柔用柔软，想修饰胯腿用垂感。"],
+              ["穿搭应用", "A型身材常用垂感下装减少横向膨胀。"]
+            ]
+          },
+          {
+            title: "层次",
+            type: "造型丰富度",
+            summary: "内搭、外套、配饰和颜色之间形成的前后关系。",
+            details: [
+              ["怎么判断", "是否有外套、露出内搭、腰带、项链或颜色分层。"],
+              ["影响推荐", "层次能增强造型感，但气候炎热或正式场合要控制数量。"],
+              ["穿搭应用", "短外套加高腰下装，是兼顾层次和显高的常用组合。"]
+            ]
+          },
+          {
+            title: "实用性",
+            type: "当天条件",
+            summary: "天气、通勤距离、是否走路、是否拍照都会影响最终建议。",
+            details: [
+              ["怎么判断", "看当天温度、是否下雨、是否需要久站或频繁移动。"],
+              ["影响推荐", "雨天减少拖地裤和浅色绒面鞋，旅行优先耐走和轻便。"],
+              ["穿搭应用", "好的推荐不是只好看，而是能在当天真实穿出去。"]
+            ]
+          }
+        ]
+      }
+    ];
+
+    const questions = [
+      {
+        id: "gender",
+        title: "你希望按哪种性别表达来推荐？",
+        hint: "这里用于调整单品、发型、妆发和场景表达，不等同于限制你的穿衣风格。",
+        options: [
+          ["female", "女性", "更偏女性化服装、发型和精致感表达"],
+          ["male", "男性", "更偏男装版型、发型和利落感表达"],
+          ["neutral", "中性", "减少性别化单品，强调干净比例和质感"],
+          ["private", "暂不透露", "按更通用的形象建议处理"]
+        ]
+      },
+      {
+        id: "ageStage",
+        title: "当前穿搭对象属于哪个阶段？",
+        hint: "不同生活阶段的穿搭目标不同：儿童更重视安全舒适，职场更重视质感和场景，银发更重视精神感与易穿脱。",
+        options: [
+          ["age_0_3", "宝宝 0-3", "亲肤安全、方便穿脱、活动不受限"],
+          ["age_4_12", "儿童 4-12", "耐脏耐磨、校园活动、成长空间"],
+          ["age_13_17", "青少年 13-17", "校园日常、基础审美、不过度成人化"],
+          ["age_18_22", "大学生 18-22", "校园社交、预算友好、轻松有风格"],
+          ["age_23_30", "初入职场 23-30", "通勤入门、质感提升、不过分成熟"],
+          ["age_31_40", "成熟职场 31-40", "职业场景、稳定气场、个人风格"],
+          ["age_41_55", "中年 41-55", "质感、体态精神和场合分寸"],
+          ["age_56_plus", "银发 56+", "舒适易穿、轻便安全、精神气色"]
+        ]
+      },
+      {
+        id: "faceShape",
+        title: "你的脸型更接近哪一种？",
+        hint: "脸型主要影响发型长度、刘海和领口线条。",
+        options: [
+          ["round", "圆脸", "轮廓柔和，横向感更明显"],
+          ["square", "方脸", "下颌线更清晰"],
+          ["long", "长脸", "纵向比例更明显"],
+          ["oval", "鹅蛋脸", "整体比例较均衡"]
+        ]
+      },
+      {
+        id: "faceLine",
+        title: "你的五官和轮廓更偏？",
+        hint: "影响风格路线，是柔和、干练还是更有存在感。",
+        options: [
+          ["soft", "柔和", "线条圆润，亲和力强"],
+          ["mixed", "适中", "柔和与清晰并存"],
+          ["sharp", "清晰", "骨相或五官存在感强"],
+          ["bright", "明艳", "五官对比度较高"]
+        ]
+      },
+      {
+        id: "neck",
+        title: "你的颈部比例更接近？",
+        hint: "颈部会影响领口、发长和配饰量感。",
+        options: [
+          ["short", "偏短", "更需要露肤和纵向线"],
+          ["normal", "适中", "大多数领口都能尝试"],
+          ["long", "偏长", "高领、丝巾也能承接"],
+          ["unknown", "不确定", "按中性建议处理"]
+        ]
+      },
+      {
+        id: "shoulder",
+        title: "你的肩部特征更接近？",
+        hint: "肩线决定上装结构感和外套选择。",
+        options: [
+          ["narrow", "窄肩", "需要增强上半身轮廓"],
+          ["sloped", "溜肩", "适合清晰肩线"],
+          ["balanced", "适中", "结构和柔软都可用"],
+          ["wide", "宽肩", "适合弱化肩部横向感"]
+        ]
+      },
+      {
+        id: "body",
+        title: "你的整体体型更接近？",
+        hint: "只用于判断版型与比例，不做身材评价。",
+        options: [
+          ["A", "A型", "下半身量感更明显"],
+          ["H", "H型", "腰线不太明显"],
+          ["X", "X型", "腰线较明显"],
+          ["V", "V型", "上半身存在感更强"]
+        ]
+      },
+      {
+        id: "waist",
+        title: "你的腰线状态更接近？",
+        hint: "腰线会影响上衣长度、下装腰位和连衣裙选择。",
+        options: [
+          ["clear", "较明显", "适合强调自然腰线"],
+          ["waist_soft", "不明显", "适合主动制造腰线"],
+          ["high", "偏高", "可用中腰平衡比例"],
+          ["unknown", "不确定", "按高腰通用建议处理"]
+        ]
+      },
+      {
+        id: "leg",
+        title: "下装最想优化哪一点？",
+        hint: "会影响裤型、裙长、鞋型和纵向线条。",
+        options: [
+          ["leg_short", "显腿长", "更需要高腰和鞋裤顺色"],
+          ["thigh", "修饰大腿", "适合直筒或A字线"],
+          ["calf", "修饰小腿", "适合九分或过踝长度"],
+          ["straight", "腿型均衡", "可选择范围较大"]
+        ]
+      },
+      {
+        id: "skinTone",
+        title: "你的肤色观感更接近？",
+        hint: "影响主色、内搭色、发色和口红色建议。",
+        options: [
+          ["cool", "冷调", "更适合冷灰、雾蓝"],
+          ["warm", "暖调", "更适合奶茶、燕麦"],
+          ["yellow", "黄调", "需要降低饱和度提气色"],
+          ["deep", "深肤色", "适合更有质感的深浅对比"]
+        ]
+      },
+      {
+        id: "hair",
+        title: "你的发量和发质更接近？",
+        hint: "影响层次、烫卷、发长和蓬松度策略。",
+        options: [
+          ["thin_soft", "细软少", "需要轻层次和蓬松感"],
+          ["normal", "中等", "大多数发型可调整"],
+          ["thick", "发量多", "需要去量和控制轮廓"],
+          ["curly", "自然卷", "需要保留弹性和层次"]
+        ]
+      },
+      {
+        id: "scene",
+        title: "这次主要穿去哪里？",
+        hint: "场景决定正式度、舒适度和视觉表达。",
+        options: [
+          ["work", "通勤", "利落、稳定、好执行"],
+          ["date", "约会", "柔和、有亲和力"],
+          ["interview", "面试", "可信、精神、克制"],
+          ["travel", "旅行", "轻便、舒适、出片"]
+        ]
+      },
+      {
+        id: "childScene",
+        title: "孩子主要穿着场景是？",
+        hint: "儿童穿搭优先考虑安全、活动、温度和照护便利。",
+        options: [
+          ["kid_home", "居家照护", "亲肤柔软、方便换洗"],
+          ["kid_school", "幼儿园/学校", "活动方便、耐脏耐穿"],
+          ["kid_outdoor", "户外活动", "防护、耐磨、便于运动"],
+          ["kid_photo", "节日拍照", "可爱但不影响活动"]
+        ]
+      },
+      {
+        id: "campusScene",
+        title: "校园或年轻阶段主要场景是？",
+        hint: "学生和年轻人更需要在预算、校园感和个人表达之间平衡。",
+        options: [
+          ["campus_daily", "日常上课", "舒服、干净、不费力"],
+          ["campus_social", "社团/聚会", "有记忆点但不过分夸张"],
+          ["campus_interview", "实习面试", "更精神、更可信"],
+          ["campus_date", "约会出行", "轻松、亲和、有细节"]
+        ]
+      },
+      {
+        id: "childPriority",
+        title: "儿童穿搭最优先考虑？",
+        hint: "儿童推荐不会只追求好看，会优先处理安全、舒适和照护成本。",
+        options: [
+          ["kid_safe", "亲肤安全", "材质柔软、少硬物装饰"],
+          ["kid_easy", "方便穿脱", "好换洗、便于如厕和活动"],
+          ["kid_durable", "耐脏耐磨", "适合校园和户外活动"],
+          ["kid_warm", "保暖防护", "温差、风雨和户外保护"]
+        ]
+      },
+      {
+        id: "formality",
+        title: "本次需要的正式程度？",
+        hint: "正式度会调整面料、鞋包和配饰。",
+        options: [
+          ["casual", "休闲", "舒服自然，行动方便"],
+          ["smart", "半正式", "兼顾精致和松弛"],
+          ["formal", "正式", "线条清楚，装饰克制"],
+          ["photo", "拍照出片", "更重视层次和记忆点"]
+        ]
+      },
+      {
+        id: "climate",
+        title: "当天穿着环境更接近？",
+        hint: "气候会影响面料厚薄、层次数量和鞋包实用性。",
+        options: [
+          ["hot", "炎热", "需要透气、轻薄、少层次"],
+          ["mild", "温和", "适合常规层次和大多数面料"],
+          ["cold", "偏冷", "需要保暖层次和外套结构"],
+          ["rain", "雨天", "需要防滑、耐脏和短下摆"]
+        ]
+      },
+      {
+        id: "goal",
+        title: "这次最想突出什么？",
+        hint: "目标效果会改变推荐的重点判断。",
+        options: [
+          ["tall", "显高", "提高腰线和纵向延伸"],
+          ["slim", "显瘦", "收窄视觉重心"],
+          ["goal_soft", "温柔", "降低对比和材质硬度"],
+          ["goal_sharp", "干练", "清晰线条和利落配色"]
+        ]
+      }
+    ];
+
+    const labels = {
+      female: "女性", male: "男性", neutral: "中性", private: "未透露",
+      age_0_3: "宝宝0-3", age_4_12: "儿童4-12", age_13_17: "青少年13-17", age_18_22: "大学生18-22",
+      age_23_30: "初入职场23-30", age_31_40: "成熟职场31-40", age_41_55: "中年41-55", age_56_plus: "银发56+",
+      round: "圆脸", square: "方脸", long: "长脸", oval: "鹅蛋脸",
+      soft: "柔和", mixed: "适中", sharp: "清晰", bright: "明艳",
+      short: "偏短", normal: "适中", unknown: "不确定",
+      narrow: "窄肩", sloped: "溜肩", balanced: "适中", wide: "宽肩",
+      A: "A型", H: "H型", X: "X型", V: "V型",
+      clear: "腰线明显", waist_soft: "腰线不明显", high: "腰线偏高",
+      leg_short: "显腿长", thigh: "修饰大腿", calf: "修饰小腿", straight: "腿型均衡",
+      cool: "冷调", warm: "暖调", yellow: "黄调", deep: "深肤色",
+      thin_soft: "细软少", thick: "发量多", curly: "自然卷",
+      work: "通勤", date: "约会", interview: "面试", travel: "旅行",
+      kid_home: "居家照护", kid_school: "幼儿园/学校", kid_outdoor: "户外活动", kid_photo: "节日拍照",
+      campus_daily: "日常上课", campus_social: "社团/聚会", campus_interview: "实习面试", campus_date: "约会出行",
+      kid_safe: "亲肤安全", kid_easy: "方便穿脱", kid_durable: "耐脏耐磨", kid_warm: "保暖防护",
+      casual: "休闲", smart: "半正式", formal: "正式", photo: "拍照出片",
+      hot: "炎热", mild: "温和", cold: "偏冷", rain: "雨天",
+      tall: "显高", slim: "显瘦", goal_soft: "温柔", goal_sharp: "干练"
+    };
+
+    const defaults = {
+      gender: "female",
+      ageStage: "age_23_30",
+      faceShape: "round",
+      faceLine: "mixed",
+      neck: "normal",
+      shoulder: "sloped",
+      body: "A",
+      waist: "waist_soft",
+      leg: "leg_short",
+      skinTone: "yellow",
+      hair: "thin_soft",
+      scene: "work",
+      childScene: "kid_school",
+      campusScene: "campus_daily",
+      childPriority: "kid_safe",
+      formality: "smart",
+      climate: "mild",
+      goal: "goal_sharp"
+    };
+
+    const routeDefs = [
+      {
+        id: "baby_comfort",
+        title: "宝宝舒适照护路线",
+        desc: "以亲肤、安全、方便穿脱为优先，颜色和造型服务于照护效率与活动舒适。",
+        style: ["亲肤", "安全", "易穿脱", "柔和"],
+        outfit: "柔软连体衣或套装 + 弹性裤腰 + 防滑袜鞋 + 易洗外套。",
+        weights: { age_0_3: 34, kid_safe: 18, kid_easy: 14, kid_home: 12, kid_warm: 10, mild: 6, cold: 8 }
+      },
+      {
+        id: "kids_active",
+        title: "儿童活力耐穿路线",
+        desc: "重点解决活动量、耐脏、耐磨和成长空间，适合校园与户外日常。",
+        style: ["耐穿", "活动", "干净", "好打理"],
+        outfit: "亲肤卫衣或针织上衣 + 弹力直筒裤 + 防滑运动鞋 + 轻便外套。",
+        weights: { age_4_12: 32, kid_school: 16, kid_outdoor: 16, kid_durable: 16, kid_easy: 10, casual: 6, rain: 6 }
+      },
+      {
+        id: "campus_clean",
+        title: "校园清爽路线",
+        desc: "在预算、舒适和个人表达之间平衡，避免过度成熟，保留年轻感和干净比例。",
+        style: ["校园", "清爽", "轻松", "预算友好"],
+        outfit: "干净T恤或衬衫 + 高腰直筒裤/半裙 + 轻便外套 + 运动鞋。",
+        weights: { age_13_17: 24, age_18_22: 26, campus_daily: 16, campus_social: 12, campus_date: 10, casual: 8, photo: 8, tall: 8 }
+      },
+      {
+        id: "clean_commute",
+        title: "清爽通勤路线",
+        desc: "用清晰肩线、低饱和配色和高腰线建立干净利落的整体比例。",
+        style: ["干练", "清爽", "低饱和", "好执行"],
+        outfit: "米白衬衫 + 高腰直筒裤 + 微垫肩短西装 + 乐福鞋。",
+        weights: { female: 6, age_23_30: 9, age_31_40: 8, work: 18, smart: 12, formal: 10, mild: 5, goal_sharp: 13, sharp: 5, yellow: 8, sloped: 8, A: 7, H: 6 }
+      },
+      {
+        id: "mens_smart",
+        title: "男装质感通勤路线",
+        desc: "用合身肩线、清爽层次和稳重配色建立专业感，重点控制裤长、鞋型和上装比例。",
+        style: ["利落", "稳重", "质感", "低调"],
+        outfit: "浅色衬衫 + 深色直筒西裤 + 轻薄夹克或西装外套 + 乐福鞋。",
+        weights: { male: 24, work: 18, smart: 12, formal: 10, goal_sharp: 12, age_23_30: 8, age_31_40: 10, age_41_55: 10, age_56_plus: 7, balanced: 6, H: 6 }
+      },
+      {
+        id: "genderless_tailor",
+        title: "中性剪裁路线",
+        desc: "用不强调性别的直线版型、干净色块和利落层次，让整体更现代、松弛但有精神。",
+        style: ["中性", "现代", "克制", "松弛"],
+        outfit: "廓形衬衫 + 直筒长裤 + 短夹克 + 极简运动鞋或乐福鞋。",
+        weights: { neutral: 24, private: 10, casual: 8, smart: 10, goal_sharp: 8, tall: 8, H: 8, V: 5, age_18_22: 8, age_23_30: 8, age_31_40: 5 }
+      },
+      {
+        id: "soft_french",
+        title: "柔和法式路线",
+        desc: "用柔和领口、顺滑面料和低对比配色，让整体更轻盈有亲和力。",
+        style: ["温柔", "轻熟", "柔和", "细节感"],
+        outfit: "针织开衫 + A字半裙 + 浅口单鞋 + 小号腋下包。",
+        weights: { female: 10, age_18_22: 7, age_23_30: 8, age_31_40: 5, date: 18, campus_date: 10, goal_soft: 15, soft: 6, smart: 8, mild: 5, round: 6, A: 7, warm: 10, yellow: 6 }
+      },
+      {
+        id: "sharp_minimal",
+        title: "利落极简路线",
+        desc: "用直线剪裁和克制配色强化精神感，适合需要专业可信的场合。",
+        style: ["极简", "克制", "专业", "高质感"],
+        outfit: "硬挺衬衫 + 深色烟管裤 + 窄长外套 + 尖头低跟鞋。",
+        weights: { male: 8, female: 6, age_31_40: 8, age_41_55: 9, age_56_plus: 8, interview: 18, campus_interview: 14, formal: 14, cold: 4, goal_sharp: 16, sharp: 8, square: 7, V: 7, cool: 8, tall: 6 }
+      },
+      {
+        id: "airy_korean",
+        title: "轻盈韩系路线",
+        desc: "用短上衣、高腰下装和干净浅色提升比例，适合日常和拍照。",
+        style: ["轻盈", "显高", "干净", "年轻感"],
+        outfit: "短款针织 + 高腰微喇裤 + 德训鞋 + 小型斜挎包。",
+        weights: { female: 8, age_18_22: 14, age_23_30: 6, tall: 18, photo: 12, casual: 9, hot: 5, round: 6, leg_short: 7, thin_soft: 6, yellow: 6 }
+      },
+      {
+        id: "relaxed_travel",
+        title: "松弛旅行路线",
+        desc: "用轻便层次、耐走鞋和有记忆点的色彩，让行动效率和出片兼得。",
+        style: ["松弛", "舒适", "层次", "出片"],
+        outfit: "短外套 + 内搭背心 + 高腰牛仔裤 + 德训鞋 + 斜挎包。",
+        weights: { neutral: 8, male: 6, age_18_22: 8, age_23_30: 8, travel: 20, casual: 12, photo: 10, hot: 7, rain: 7, tall: 8, deep: 7, straight: 5 }
+      },
+      {
+        id: "mature_quality",
+        title: "中年质感精神路线",
+        desc: "减少花哨装饰，用挺括或垂顺材质、清晰肩线和稳定配色提升精神感。",
+        style: ["质感", "稳重", "精神", "克制"],
+        outfit: "挺括外套 + 质感针织或衬衫 + 合身直筒裤 + 低调皮鞋。",
+        weights: { age_41_55: 28, male: 10, female: 8, work: 12, smart: 12, formal: 8, goal_sharp: 10, cold: 5 }
+      },
+      {
+        id: "senior_comfort",
+        title: "银发舒适精神路线",
+        desc: "优先舒适易穿、轻便安全和气色提升，同时保留清爽轮廓与精神感。",
+        style: ["舒适", "轻便", "精神", "安全"],
+        outfit: "柔软开衫或轻外套 + 易穿脱上衣 + 直筒长裤 + 防滑轻便鞋。",
+        weights: { age_56_plus: 34, casual: 10, smart: 8, mild: 6, cold: 8, goal_sharp: 6, kid_easy: 4 }
+      }
+    ];
+
+    const detailRules = [
+      {
+        id: "gender_female",
+        category: "outfit",
+        title: "女性表达强调比例与精致度",
+        points: 10,
+        when: (p) => p.gender === "female",
+        text: "推荐更明确的腰线、轻量配饰、适度露肤和发型层次，让整体更精致但不堆砌。",
+        avoid: "上下都宽松且没有腰线"
+      },
+      {
+        id: "gender_male",
+        category: "outfit",
+        title: "男性表达优先肩线和合身度",
+        points: 11,
+        when: (p) => p.gender === "male",
+        text: "推荐合身肩线、干净领口、直筒裤型和质感鞋履，重点避免松垮和裤长堆积。",
+        avoid: "过长裤脚、肩线塌陷"
+      },
+      {
+        id: "gender_neutral",
+        category: "outfit",
+        title: "中性表达减少性别化装饰",
+        points: 10,
+        when: (p) => p.gender === "neutral" || p.gender === "private",
+        text: "推荐直线剪裁、低饱和色块、廓形衬衫和简洁鞋包，用比例和材质表达风格。",
+        avoid: "过度甜美或过度强商务的单品组合"
+      },
+      {
+        id: "age_young",
+        category: "outfit",
+        title: "校园和年轻阶段可提高尝试度",
+        points: 8,
+        when: (p) => p.ageStage === "age_13_17" || p.ageStage === "age_18_22",
+        text: "可以保留更轻盈的颜色、短款比例和一点流行元素，但青少年要避免过度成人化，大学生要兼顾预算和校园感。",
+        avoid: "过多流行元素同时出现"
+      },
+      {
+        id: "age_adult",
+        category: "outfit",
+        title: "成熟通勤阶段兼顾质感和效率",
+        points: 9,
+        when: (p) => p.ageStage === "age_23_30" || p.ageStage === "age_31_40",
+        text: "推荐基础色、好打理面料和有质感的鞋包，兼顾职业场景和个人风格。",
+        avoid: "廉价感强的薄软面料"
+      },
+      {
+        id: "age_mature",
+        category: "outfit",
+        title: "成熟阶段提高材质权重",
+        points: 10,
+        when: (p) => p.ageStage === "age_41_55",
+        text: "推荐更克制的配色、挺括或垂顺的高质感面料，以及更清晰的精神感轮廓。",
+        avoid: "过分幼态的图案和过碎装饰"
+      },
+      {
+        id: "age_child",
+        category: "outfit",
+        title: "儿童穿搭优先安全和活动",
+        points: 12,
+        when: (p) => p.ageStage === "age_0_3" || p.ageStage === "age_4_12",
+        text: "儿童推荐优先亲肤、易穿脱、耐脏耐磨和活动自由度，不建议为了造型牺牲舒适与安全。",
+        avoid: "硬质尖锐装饰、过紧腰头"
+      },
+      {
+        id: "age_senior",
+        category: "outfit",
+        title: "银发阶段优先舒适和精神感",
+        points: 12,
+        when: (p) => p.ageStage === "age_56_plus",
+        text: "推荐易穿脱、轻便、防滑、显气色的单品，用清爽轮廓提升精神感。",
+        avoid: "过重鞋履、复杂难穿脱设计"
+      },
+      {
+        id: "kid_safe_rule",
+        category: "outfit",
+        title: "亲肤安全优先",
+        points: 11,
+        when: (p) => p.childPriority === "kid_safe",
+        text: "优先棉质、无硬质尖锐装饰、领口袖口不勒的单品，宝宝和儿童都要避免为了造型牺牲安全。",
+        avoid: "硬扣尖角、粗糙刺痒面料"
+      },
+      {
+        id: "kid_easy_rule",
+        category: "outfit",
+        title: "方便穿脱降低照护成本",
+        points: 10,
+        when: (p) => p.childPriority === "kid_easy",
+        text: "推荐开衫、弹性腰、好套脱鞋型和易清洗面料，适合幼儿园、如厕和频繁更换。",
+        avoid: "复杂系带、难穿脱连体结构"
+      },
+      {
+        id: "kid_durable_rule",
+        category: "outfit",
+        title: "活动场景需要耐脏耐磨",
+        points: 10,
+        when: (p) => p.childPriority === "kid_durable",
+        text: "推荐耐磨裤装、防滑运动鞋和中深色下装，保证跑跳、坐地和户外活动时更实用。",
+        avoid: "浅色薄裤、易磨损面料"
+      },
+      {
+        id: "hair_male_base",
+        category: "hair",
+        title: "男性发型优先清爽轮廓",
+        points: 15,
+        when: (p) => p.gender === "male",
+        text: "推荐两侧清爽、顶部保留适度高度的短发或三七分，圆脸可增加顶部蓬松，方脸减少过硬鬓角。",
+        avoid: "贴头皮短发、过厚刘海"
+      },
+      {
+        id: "hair_neutral_base",
+        category: "hair",
+        title: "中性发型强调干净线条",
+        points: 14,
+        when: (p) => p.gender === "neutral" || p.gender === "private",
+        text: "推荐露耳短发、低层次中短发或干净侧分，重点保留头肩比例和面部清爽度。",
+        avoid: "轮廓过厚、遮挡五官的发型"
+      },
+      {
+        id: "hair_round",
+        category: "hair",
+        title: "圆脸增加纵向线条",
+        points: 12,
+        when: (p) => p.faceShape === "round",
+        text: "推荐锁骨发、八字刘海或侧分刘海；避免厚重齐刘海和齐下巴短发。",
+        avoid: "厚重齐刘海、贴头皮直发"
+      },
+      {
+        id: "hair_square",
+        category: "hair",
+        title: "方脸弱化下颌直线感",
+        points: 12,
+        when: (p) => p.faceShape === "square",
+        text: "推荐中长层次发、S形侧分和发尾柔化；避免齐下巴硬直短发。",
+        avoid: "硬直发尾、齐下巴短发"
+      },
+      {
+        id: "hair_long",
+        category: "hair",
+        title: "长脸平衡纵向比例",
+        points: 12,
+        when: (p) => p.faceShape === "long",
+        text: "推荐空气刘海、肩上微卷或中短发；减少过高颅顶和过长直发。",
+        avoid: "大背头、过长直发"
+      },
+      {
+        id: "hair_oval",
+        category: "hair",
+        title: "鹅蛋脸保留五官露出",
+        points: 9,
+        when: (p) => p.faceShape === "oval",
+        text: "锁骨发、低层次长发或短 bob 都可尝试，重点保留五官露出和头肩比例。",
+        avoid: "过度遮挡五官的厚重发型"
+      },
+      {
+        id: "neck_short",
+        category: "silhouette",
+        title: "短颈优先打开领口",
+        points: 10,
+        when: (p) => p.neck === "short",
+        text: "优先V领、U领、低领衬衫和细长项链，发长不压在脖颈最短处。",
+        avoid: "厚高领、贴颈宽项链"
+      },
+      {
+        id: "shoulder_sloped",
+        category: "silhouette",
+        title: "溜肩需要清晰肩线",
+        points: 11,
+        when: (p) => p.shoulder === "sloped" || p.shoulder === "narrow",
+        text: "推荐有肩线的衬衫、短西装、挺括夹克，帮助建立上半身轮廓。",
+        avoid: "过软塌落肩上衣"
+      },
+      {
+        id: "shoulder_wide",
+        category: "silhouette",
+        title: "宽肩弱化横向量感",
+        points: 10,
+        when: (p) => p.shoulder === "wide",
+        text: "推荐纵向开襟、窄长领口和垂感下装，减少大垫肩和泡泡袖。",
+        avoid: "夸张垫肩、大泡泡袖"
+      },
+      {
+        id: "body_a",
+        category: "bottom",
+        title: "A型身材上移视觉重心",
+        points: 13,
+        when: (p) => p.body === "A",
+        text: "推荐有结构的上装、高腰直筒裤、A字裙或微喇裤，减少胯部装饰。",
+        avoid: "低腰裤、胯部大口袋"
+      },
+      {
+        id: "body_h",
+        category: "silhouette",
+        title: "H型主动制造腰线",
+        points: 12,
+        when: (p) => p.body === "H" || p.waist === "waist_soft",
+        text: "推荐短外套、腰带、高腰下装和有收腰线的连衣裙。",
+        avoid: "上下同宽的松垮叠穿"
+      },
+      {
+        id: "leg_short",
+        category: "bottom",
+        title: "显腿长依赖腰线和顺色",
+        points: 12,
+        when: (p) => p.leg === "leg_short" || p.goal === "tall",
+        text: "推荐高腰、九分直筒、鞋裤同色或尖头鞋，减少横向截断。",
+        avoid: "低腰裤、厚重踝靴截断"
+      },
+      {
+        id: "skin_yellow",
+        category: "color",
+        title: "黄调肤色降低饱和度",
+        points: 11,
+        when: (p) => p.skinTone === "yellow",
+        text: "推荐米白、鼠尾草绿、雾蓝、炭灰；避免荧光黄绿和高饱和玫红。",
+        avoid: "荧光黄绿、高饱和玫红"
+      },
+      {
+        id: "skin_cool",
+        category: "color",
+        title: "冷调肤色适合冷净色",
+        points: 10,
+        when: (p) => p.skinTone === "cool",
+        text: "推荐珍珠白、雾蓝、冷灰、海军蓝；减少橘棕和暖黄大面积使用。",
+        avoid: "橘棕、暖黄"
+      },
+      {
+        id: "skin_warm",
+        category: "color",
+        title: "暖调肤色适合柔和暖色",
+        points: 10,
+        when: (p) => p.skinTone === "warm",
+        text: "推荐燕麦、奶茶、橄榄绿、暖棕，用柔和暖调提升气色和亲和力。",
+        avoid: "高冷感银灰、荧光粉"
+      },
+      {
+        id: "skin_deep",
+        category: "color",
+        title: "深肤色提高质感对比",
+        points: 10,
+        when: (p) => p.skinTone === "deep",
+        text: "推荐奶油白、砖红、深牛仔蓝、黑咖，用干净对比提升质感。",
+        avoid: "灰度过高的浑浊浅色"
+      },
+      {
+        id: "hair_thin",
+        category: "hair",
+        title: "细软发需要轻盈蓬松",
+        points: 9,
+        when: (p) => p.hair === "thin_soft",
+        text: "推荐轻层次、发根蓬松和锁骨长度；避免厚重长直发压低头顶。",
+        avoid: "贴头皮长直发"
+      },
+      {
+        id: "scene_formal",
+        category: "outfit",
+        title: "正式场合减少装饰噪音",
+        points: 12,
+        when: (p) => p.formality === "formal" || p.scene === "interview",
+        text: "优先低饱和色、挺括面料、小面积配饰，鞋包保持简洁。",
+        avoid: "大面积亮片、复杂图案"
+      },
+      {
+        id: "climate_hot",
+        category: "outfit",
+        title: "炎热环境减少厚重层次",
+        points: 9,
+        when: (p) => p.climate === "hot",
+        text: "优先棉麻、醋酸、轻薄衬衫和透气鞋型，用颜色层次替代厚外套层次。",
+        avoid: "厚针织、重磅外套"
+      },
+      {
+        id: "climate_cold",
+        category: "outfit",
+        title: "偏冷环境保留外套结构",
+        points: 9,
+        when: (p) => p.climate === "cold",
+        text: "推荐短大衣、挺括夹克或叠穿内搭，保暖同时不压低腰线。",
+        avoid: "臃肿无腰线外套"
+      },
+      {
+        id: "climate_rain",
+        category: "outfit",
+        title: "雨天提高实用性权重",
+        points: 9,
+        when: (p) => p.climate === "rain",
+        text: "优先防滑鞋、短下摆外套、深色下装和耐脏包袋，减少拖地裤脚。",
+        avoid: "拖地裤、绒面浅色鞋"
+      },
+      {
+        id: "goal_soft",
+        category: "outfit",
+        title: "温柔目标降低对比",
+        points: 10,
+        when: (p) => p.goal === "goal_soft",
+        text: "使用针织、缎面、柔软半裙和低对比同色系，减少强硬黑白撞色。",
+        avoid: "强硬黑白撞色"
+      }
+    ];
+
+    const colorPalettes = {
+      yellow: ["#f0efe6", "#b9c7bb", "#6f8a82", "#364b59"],
+      cool: ["#f5f6f4", "#9bb8c9", "#5f6f8f", "#2d3136"],
+      warm: ["#f4e5c8", "#d7a76c", "#8f6c4d", "#39453d"],
+      deep: ["#f2dfbd", "#aa5547", "#283f53", "#1f2b2d"]
+    };
+
+    const modeMeta = {
+      full: { title: "完整诊断", resultTitle: "完整形象报告" },
+      hair: { title: "发型定位", resultTitle: "发型定位报告" },
+      proportion: { title: "身形版型", resultTitle: "身形版型报告" }
+    };
+
+    let profile = { ...defaults };
+    let step = 0;
+    let latestResult = null;
+    let activeLearnCategory = "face";
+    let activeVariant = 1;
+    let activeMode = "full";
+    let activeQuestions = [];
+    const screens = document.querySelectorAll(".screen");
+    const tabs = document.querySelectorAll(".tab");
+    const optionsEl = document.getElementById("options");
+    const questionTitle = document.getElementById("questionTitle");
+    const questionHint = document.getElementById("questionHint");
+    const diagnosisTitle = document.getElementById("diagnosisTitle");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressFill = document.getElementById("progressFill");
+    const summaryChips = document.getElementById("summaryChips");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const toast = document.getElementById("toast");
+    const learnTabs = document.getElementById("learnTabs");
+    const learnGrid = document.getElementById("learnGrid");
+    const learnCategoryHint = document.getElementById("learnCategoryHint");
+    const termDrawer = document.getElementById("termDrawer");
+    const termCategory = document.getElementById("termCategory");
+    const termTitle = document.getElementById("termTitle");
+    const termSummary = document.getElementById("termSummary");
+    const termDetails = document.getElementById("termDetails");
+    const variantRow = document.getElementById("variantRow");
+    const feedbackNote = document.getElementById("feedbackNote");
+
+    function renderLearnTerms() {
+      const category = learnCategories.find((item) => item.id === activeLearnCategory) || learnCategories[0];
+      learnCategoryHint.textContent = category.title;
+      learnTabs.innerHTML = learnCategories.map((item) => `
+        <button class="learn-tab ${item.id === category.id ? "active" : ""}" type="button" data-learn-tab="${item.id}">
+          ${item.title}
+        </button>
+      `).join("");
+      learnGrid.innerHTML = category.terms.map((term, index) => `
+        <button class="learn-card" type="button" data-learn-term="${index}">
+          <div class="learn-meta"><span>${term.type}</span><span class="learn-index">${String(index + 1).padStart(2, "0")}</span></div>
+          <strong>${term.title}</strong>
+          <p>${term.summary}</p>
+          <span class="learn-action">点击了解</span>
+        </button>
+      `).join("");
+    }
+
+    function openTermDetail(index) {
+      const category = learnCategories.find((item) => item.id === activeLearnCategory) || learnCategories[0];
+      const term = category.terms[index];
+      if (!term) return;
+      termCategory.textContent = category.title + " · " + term.type;
+      termTitle.textContent = term.title;
+      termSummary.textContent = term.summary;
+      termDetails.innerHTML = term.details.map(([title, body]) => `
+        <div class="term-detail">
+          <strong>${title}</strong>
+          ${body}
+        </div>
+      `).join("");
+      termDrawer.classList.add("open");
+      termDrawer.setAttribute("aria-hidden", "false");
+    }
+
+    function closeTermDetail() {
+      termDrawer.classList.remove("open");
+      termDrawer.setAttribute("aria-hidden", "true");
+    }
+
+    function label(value) {
+      return labels[value] || value;
+    }
+
+    function ageGroup() {
+      if (["age_0_3", "age_4_12"].includes(profile.ageStage)) return "child";
+      if (["age_13_17", "age_18_22"].includes(profile.ageStage)) return "campus";
+      if (profile.ageStage === "age_56_plus") return "senior";
+      return "adult";
+    }
+
+    function getQuestionById(id) {
+      return questions.find((question) => question.id === id);
+    }
+
+    function getActiveQuestionIds() {
+      const group = ageGroup();
+      if (activeMode === "hair") {
+        if (group === "child") return ["gender", "ageStage", "faceShape", "hair", "childPriority"];
+        return ["gender", "ageStage", "faceShape", "faceLine", "neck", "hair", "skinTone", "goal"];
+      }
+      if (activeMode === "proportion") {
+        if (group === "child") return ["gender", "ageStage", "childScene", "climate", "childPriority"];
+        if (group === "campus") return ["gender", "ageStage", "shoulder", "body", "waist", "leg", "campusScene", "goal"];
+        return ["gender", "ageStage", "shoulder", "body", "waist", "leg", "scene", "formality", "goal"];
+      }
+      if (group === "child") {
+        return ["gender", "ageStage", "childScene", "climate", "childPriority", "skinTone"];
+      }
+      if (group === "campus") {
+        return ["gender", "ageStage", "faceShape", "faceLine", "shoulder", "body", "skinTone", "hair", "campusScene", "climate", "goal"];
+      }
+      if (group === "senior") {
+        return ["gender", "ageStage", "faceShape", "neck", "shoulder", "body", "waist", "skinTone", "hair", "scene", "climate", "goal"];
+      }
+      return ["gender", "ageStage", "faceShape", "faceLine", "neck", "shoulder", "body", "waist", "leg", "skinTone", "hair", "scene", "formality", "climate", "goal"];
+    }
+
+    function refreshActiveQuestions() {
+      activeQuestions = getActiveQuestionIds()
+        .map(getQuestionById)
+        .filter(Boolean);
+      if (step >= activeQuestions.length) step = activeQuestions.length - 1;
+      if (step < 0) step = 0;
+    }
+
+    function setScreen(name) {
+      screens.forEach((screen) => {
+        const active = screen.dataset.screen === name;
+        screen.classList.toggle("active", active);
+        if (active) screen.scrollTop = 0;
+      });
+      tabs.forEach((tab) => {
+        const target = tab.dataset.tab;
+        tab.classList.toggle("active", target === name || (name === "analysis" && target === "diagnosis") || (name === "result" && target === "reports"));
+      });
+    }
+
+    function startDiagnosis(mode = "full") {
+      activeMode = modeMeta[mode] ? mode : "full";
+      step = 0;
+      refreshActiveQuestions();
+      renderQuestion();
+      setScreen("diagnosis");
+    }
+
+    function renderQuestion() {
+      refreshActiveQuestions();
+      const q = activeQuestions[step];
+      diagnosisTitle.textContent = modeMeta[activeMode].title;
+      questionTitle.textContent = q.title;
+      questionHint.textContent = q.hint;
+      stepLabel.textContent = `${step + 1} / ${activeQuestions.length}`;
+      progressFill.style.width = `${((step + 1) / activeQuestions.length) * 100}%`;
+      optionsEl.className = q.options.length > 4 ? "options compact" : "options";
+      optionsEl.innerHTML = q.options.map(([value, title, desc]) => `
+        <button class="option ${profile[q.id] === value ? "selected" : ""}" type="button" data-option="${value}">
+          <strong>${title}</strong>
+          <span>${desc}</span>
+        </button>
+      `).join("");
+      prevBtn.style.visibility = step === 0 ? "hidden" : "visible";
+      nextBtn.innerHTML = step === activeQuestions.length - 1
+        ? `生成报告 <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>`
+        : `下一步 <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>`;
+      renderSummary();
+    }
+
+    function renderSummary() {
+      const values = activeQuestions
+        .slice(0, Math.max(step + 1, 1))
+        .map((q) => profile[q.id])
+        .filter(Boolean)
+        .slice(-5);
+      summaryChips.innerHTML = values.map((value) => `<span class="chip active">${label(value)}</span>`).join("");
+    }
+
+    function scoringValues(p) {
+      const source = activeQuestions.length ? activeQuestions : questions;
+      return source.map((question) => p[question.id]).filter(Boolean);
+    }
+
+    function scoreRoutes(p) {
+      const values = scoringValues(p);
+      return routeDefs.map((route) => {
+        let raw = 46;
+        const hits = [];
+        Object.entries(route.weights).forEach(([key, value]) => {
+          const matched = values.includes(key);
+          if (matched) {
+            raw += value;
+            hits.push({ key, value });
+          }
+        });
+        const score = Math.min(96, Math.round(raw));
+        return { ...route, score, hits };
+      }).sort((a, b) => b.score - a.score);
+    }
+
+    function askedAny(ids) {
+      return ids.some((id) => activeQuestions.some((question) => question.id === id));
+    }
+
+    function ruleAllowed(rule) {
+      const deps = {
+        gender_female: ["gender"],
+        gender_male: ["gender"],
+        gender_neutral: ["gender"],
+        age_young: ["ageStage"],
+        age_adult: ["ageStage"],
+        age_mature: ["ageStage"],
+        age_child: ["ageStage"],
+        age_senior: ["ageStage"],
+        kid_safe_rule: ["childPriority"],
+        kid_easy_rule: ["childPriority"],
+        kid_durable_rule: ["childPriority"],
+        hair_male_base: ["gender", "hair"],
+        hair_neutral_base: ["gender", "hair"],
+        hair_round: ["faceShape"],
+        hair_square: ["faceShape"],
+        hair_long: ["faceShape"],
+        hair_oval: ["faceShape"],
+        neck_short: ["neck"],
+        shoulder_sloped: ["shoulder"],
+        shoulder_wide: ["shoulder"],
+        body_a: ["body"],
+        body_h: ["body", "waist"],
+        leg_short: ["leg", "goal"],
+        skin_yellow: ["skinTone"],
+        skin_cool: ["skinTone"],
+        skin_warm: ["skinTone"],
+        skin_deep: ["skinTone"],
+        hair_thin: ["hair"],
+        scene_formal: ["scene", "formality", "campusScene"],
+        climate_hot: ["climate"],
+        climate_cold: ["climate"],
+        climate_rain: ["climate"],
+        goal_soft: ["goal"]
+      };
+      return askedAny(deps[rule.id] || []);
+    }
+
+    function getRules(p) {
+      return detailRules
+        .filter((rule) => rule.when(p))
+        .filter(ruleAllowed)
+        .sort((a, b) => b.points - a.points);
+    }
+
+    function categoryScores(rules) {
+      const base = { 发型: 48, 色彩: 48, 版型: 48, 场景: 48 };
+      rules.forEach((rule) => {
+        if (rule.category === "hair") base.发型 += rule.points * 3;
+        if (rule.category === "color") base.色彩 += rule.points * 3;
+        if (["silhouette", "bottom"].includes(rule.category)) base.版型 += rule.points * 2.5;
+        if (rule.category === "outfit") base.场景 += rule.points * 3;
+      });
+      Object.keys(base).forEach((key) => base[key] = Math.min(96, Math.round(base[key])));
+      return base;
+    }
+
+    function buildResult() {
+      const routes = scoreRoutes(profile);
+      const rules = getRules(profile);
+      const top = routes[0];
+      const palette = colorPalettes[profile.skinTone] || colorPalettes.yellow;
+      const hairRule = rules.find((r) => r.category === "hair") || detailRules.find((r) => r.id === "hair_round");
+      const colorRule = rules.find((r) => r.category === "color") || detailRules.find((r) => r.id === "skin_yellow");
+      const silhouetteRules = rules.filter((r) => ["silhouette", "bottom"].includes(r.category)).slice(0, 2);
+      const avoid = [...new Set(rules.map((r) => r.avoid).filter(Boolean))].slice(0, 4).join("、");
+      const score = Math.min(96, Math.round((top.score + Math.min(18, rules.length) * 1.1)));
+      return {
+        top,
+        routes,
+        rules,
+        palette,
+        hairRule,
+        colorRule,
+        silhouetteRules,
+        avoid,
+        score,
+        categories: categoryScores(rules)
+      };
+    }
+
+    function occasionLabel() {
+      if (askedAny(["childScene"])) return label(profile.childScene);
+      if (askedAny(["campusScene"])) return label(profile.campusScene);
+      return label(profile.scene);
+    }
+
+    function buildOutfitVariants(result) {
+      const top = result.top;
+      const sceneLabel = occasionLabel();
+      const paletteWord = profile.skinTone === "deep" ? "奶油白和深牛仔蓝" : profile.skinTone === "warm" ? "燕麦和暖棕" : profile.skinTone === "cool" ? "珍珠白和雾蓝" : "米白和鼠尾草绿";
+      return [
+        {
+          id: "safe",
+          title: "稳妥款",
+          tag: sceneLabel,
+          outfit: top.outfit,
+          note: "适合第一次尝试，单品基础、出错率低。",
+          hair: result.hairRule.text,
+          avoid: result.avoid ? `避开：${result.avoid}` : "避开过度复杂和不符合场景的单品。"
+        },
+        {
+          id: "best",
+          title: "推荐款",
+          tag: "最适合",
+          outfit: top.outfit.replace("。", "") + "，加入一件有质感的配饰做重点。",
+          note: "更贴合当前画像，兼顾比例、气色和场景。",
+          hair: result.hairRule.text,
+          avoid: result.avoid ? `避开：${result.avoid}` : "避开过度复杂和不符合场景的单品。"
+        },
+        {
+          id: "photo",
+          title: "出片款",
+          tag: "更有记忆点",
+          outfit: `用${paletteWord}做主色，保留高腰线，再加一处亮点配饰。`,
+          note: "适合约会、聚会、旅行拍照，视觉层次更明显。",
+          hair: profile.faceShape === "long" ? "发型保留轻刘海和侧向层次，避免继续拉长脸型。" : result.hairRule.text,
+          avoid: "避开全身同一深色和没有腰线的宽松叠穿。"
+        }
+      ];
+    }
+
+    function applyVariant(result, index) {
+      const variants = buildOutfitVariants(result);
+      const variant = variants[index] || variants[1];
+      activeVariant = variants.indexOf(variant);
+      document.getElementById("lookHair").textContent = variant.hair;
+      document.getElementById("lookOutfit").textContent = variant.outfit;
+      document.getElementById("lookAvoid").textContent = variant.avoid;
+      document.getElementById("lookWhy").textContent = variant.note;
+      variantRow.innerHTML = variants.map((item, itemIndex) => `
+        <button class="variant-card ${itemIndex === activeVariant ? "active" : ""}" type="button" data-variant="${itemIndex}">
+          <small>${item.tag}</small>
+          <strong>${item.title}</strong>
+          <span>${item.outfit}</span>
+        </button>
+      `).join("");
+    }
+
+    function showAnalysis() {
+      setScreen("analysis");
+      const result = buildResult();
+      latestResult = result;
+      const steps = [
+        `脸型/发质：找到 ${result.rules.filter((r) => r.category === "hair").length} 条依据`,
+        `肤色/发色：找到 ${result.rules.filter((r) => r.category === "color").length} 条依据`,
+        `肩腰腿比例：找到 ${result.rules.filter((r) => ["silhouette","bottom"].includes(r.category)).length} 条依据`,
+        `场景正式度：找到 ${result.rules.filter((r) => r.category === "outfit").length} 条依据`,
+        `候选路线：${result.routes[0].title} 领先`
+      ];
+      const matchList = document.getElementById("matchList");
+      matchList.innerHTML = steps.map((text, index) => `
+        <div class="match-line" data-match="${index}">
+          <span class="match-dot"></span>
+          <span>${text}</span>
+          <strong>${index === steps.length - 1 ? result.score : "+" + (8 + index * 3)}</strong>
+        </div>
+      `).join("");
+
+      let index = 0;
+      document.getElementById("analysisText").textContent = "计算脸型与发型适配度";
+      const phrases = ["筛选肤色与适合色", "合并肩线、腰线、腿型建议", "比较候选风格路线", "生成穿搭和避雷建议"];
+      const timer = setInterval(() => {
+        const line = matchList.querySelector(`[data-match="${index}"]`);
+        if (line) line.classList.add("live");
+        document.getElementById("analysisText").textContent = phrases[index % phrases.length];
+        index += 1;
+      }, 360);
+
+      window.setTimeout(() => {
+        clearInterval(timer);
+        activeVariant = 1;
+        renderResult(result);
+        setScreen("result");
+      }, 2100);
+    }
+
+    function renderResult(result = latestResult || buildResult()) {
+      latestResult = result;
+      const top = result.top;
+      const isHairMode = activeMode === "hair";
+      const isProportionMode = activeMode === "proportion";
+      document.getElementById("matchScore").textContent = result.score;
+      document.getElementById("resultTitle").textContent = isHairMode ? modeMeta.hair.resultTitle : isProportionMode ? modeMeta.proportion.resultTitle : top.title;
+      document.getElementById("resultDesc").textContent = isHairMode ? result.hairRule.text : isProportionMode ? "重点根据肩线、腰线、腿型和场景，推荐更适合的上衣、裤裙、外套和鞋型。" : top.desc;
+      document.getElementById("signalRow").innerHTML = [
+        label(profile.gender),
+        label(profile.ageStage),
+        ...top.style,
+        occasionLabel(),
+        label(profile.goal)
+      ].slice(0, 6).map((item) => `<span class="signal">${item}</span>`).join("");
+
+      document.getElementById("lookHair").textContent = result.hairRule.text;
+      document.getElementById("lookOutfit").textContent = top.outfit;
+      document.getElementById("lookAvoid").textContent = result.avoid ? `避开：${result.avoid}` : "避开过度复杂和不符合场景的单品。";
+      document.getElementById("lookWhy").textContent = `参考 ${result.rules.length} 条依据，前三路线分差 ${Math.max(1, result.routes[0].score - result.routes[1].score)} 分。`;
+
+      const figureTop = document.getElementById("figureTop");
+      const figureBottom = document.getElementById("figureBottom");
+      const figureHair = document.getElementById("figureHair");
+      figureTop.style.background = result.palette[1];
+      figureBottom.style.background = result.palette[2];
+      figureTop.style.width = profile.shoulder === "wide" ? "66px" : profile.shoulder === "narrow" || profile.shoulder === "sloped" ? "78px" : "72px";
+      figureHair.style.height = profile.faceShape === "long" ? "47px" : profile.hair === "thick" ? "64px" : "58px";
+      figureHair.style.clipPath = profile.faceShape === "square"
+        ? "polygon(10% 18%, 50% 0, 90% 18%, 82% 96%, 18% 96%)"
+        : "polygon(8% 24%, 50% 0, 92% 24%, 84% 100%, 16% 100%)";
+
+      const switcher = document.querySelector(".look-switcher");
+      if (isHairMode) {
+        if (switcher) switcher.style.display = "none";
+        document.getElementById("lookHair").textContent = result.hairRule.text;
+        document.getElementById("lookOutfit").textContent = `${label(profile.gender)} · ${label(profile.ageStage)}：本次只针对发型，不参与服饰穿搭匹配。`;
+        document.getElementById("lookAvoid").textContent = result.hairRule.avoid ? `避开：${result.hairRule.avoid}` : "避开遮挡五官或压低头肩比例的发型。";
+        document.getElementById("lookWhy").textContent = "依据脸型、颈长、发量、性别表达和年龄气质生成。";
+      } else {
+        if (switcher) switcher.style.display = "";
+        applyVariant(result, activeVariant);
+      }
+
+      const bars = Object.entries(result.categories).map(([name, value]) => `
+        <div class="bar-row">
+          <span>${name}</span>
+          <div class="bar"><span style="width:${value}%"></span></div>
+          <strong>${value}</strong>
+        </div>
+      `).join("");
+
+      const routes = result.routes.slice(0, 3).map((route, index) => `
+        <div class="route-card">
+          <div class="route-rank">${index + 1}</div>
+          <div>
+            <strong>${route.title}</strong>
+            <span>${route.outfit}</span>
+          </div>
+          <div class="route-score">${route.score}</div>
+        </div>
+      `).join("");
+
+      const rules = result.rules.slice(0, 6).map((rule) => `
+        <div class="rule-card">
+          <div class="rule-points">+${rule.points}</div>
+          <div>
+            <strong>${rule.title}</strong>
+            <span>${rule.text}</span>
+          </div>
+        </div>
+      `).join("");
+
+      const silhouetteText = result.silhouetteRules.length
+        ? result.silhouetteRules.map((rule) => rule.text).join("")
+        : "保持合身但不紧绷的版型，优先明确腰线和干净鞋型。";
+
+      if (isHairMode) {
+        document.getElementById("adviceStack").innerHTML = `
+          <article class="panel">
+            <div class="panel-title"><h3>发型方向</h3><span class="tag">${label(profile.gender)}</span></div>
+            <p>${result.hairRule.text}</p>
+          </article>
+          <article class="panel">
+            <div class="panel-title"><h3>年龄气质</h3><span class="tag">${label(profile.ageStage)}</span></div>
+            <p>${result.rules.filter((rule) => rule.id.startsWith("age_")).map((rule) => rule.text).join("") || "根据当前年龄阶段，发型建议会控制成熟度、清爽度和日常打理难度。"}</p>
+          </article>
+          <article class="panel">
+            <div class="panel-title"><h3>避雷提醒</h3><span class="tag">发型</span></div>
+            <p>${result.hairRule.avoid || "避免过厚、过贴头皮或遮挡五官的发型。"}</p>
+          </article>
+          <article class="panel">
+            <div class="panel-title"><h3>推荐依据</h3><span class="tag">${result.rules.length} 条</span></div>
+            <div class="rule-list">${rules}</div>
+          </article>
+        `;
+        return;
+      }
+
+      document.getElementById("adviceStack").innerHTML = `
+        <article class="panel">
+          <div class="panel-title"><h3>推荐路线排名</h3><span class="tag">加权评分</span></div>
+          <div class="route-grid">${routes}</div>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><h3>画像匹配分布</h3><span class="tag">模块评分</span></div>
+          <div class="bar-list">${bars}</div>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><h3>发型与脸型</h3><span class="tag">${label(profile.faceShape)}</span></div>
+          <p>${result.hairRule.text}</p>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><h3>颜色与气色</h3><span class="tag">${label(profile.skinTone)}</span></div>
+          <p>${result.colorRule.text}</p>
+          <div class="palette">${result.palette.map((c) => `<span class="swatch" style="background:${c}"></span>`).join("")}</div>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><h3>版型与比例</h3><span class="tag">${label(profile.body)}</span></div>
+          <p>${silhouetteText}</p>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><h3>推荐依据</h3><span class="tag">${result.rules.length} 条</span></div>
+          <div class="rule-list">${rules}</div>
+        </article>
+      `;
+    }
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    document.addEventListener("click", (event) => {
+      const start = event.target.closest("[data-start]");
+      const result = event.target.closest("[data-result]");
+      const tab = event.target.closest("[data-tab]");
+      const option = event.target.closest("[data-option]");
+      const learnTab = event.target.closest("[data-learn-tab]");
+      const learnTerm = event.target.closest("[data-learn-term]");
+      const closeTerm = event.target.closest("[data-close-term]");
+      const variant = event.target.closest("[data-variant]");
+      const feedback = event.target.closest("[data-feedback]");
+
+      if (closeTerm || event.target === termDrawer) {
+        closeTermDetail();
+        return;
+      }
+
+      if (learnTab) {
+        activeLearnCategory = learnTab.dataset.learnTab;
+        renderLearnTerms();
+        return;
+      }
+
+      if (learnTerm) {
+        openTermDetail(Number(learnTerm.dataset.learnTerm));
+        return;
+      }
+
+      if (variant) {
+        applyVariant(latestResult || buildResult(), Number(variant.dataset.variant));
+        return;
+      }
+
+      if (feedback) {
+        document.querySelectorAll(".feedback-chip").forEach((chip) => chip.classList.remove("active"));
+        feedback.classList.add("active");
+        feedbackNote.textContent = `已记录“${feedback.dataset.feedback}”。下一次会优先调整颜色、正式度和单品风格。`;
+        showToast("偏好已记录");
+        return;
+      }
+
+      if (start) {
+        startDiagnosis(start.dataset.start || "full");
+        return;
+      }
+
+      if (result) {
+        renderResult();
+        setScreen("result");
+        return;
+      }
+
+      if (tab) {
+        const target = tab.dataset.tab;
+        if (target === "diagnosis") startDiagnosis("full");
+        else setScreen(target);
+        return;
+      }
+
+      if (option) {
+        const q = activeQuestions[step];
+        profile[q.id] = option.dataset.option;
+        renderQuestion();
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (step > 0) {
+        step -= 1;
+        renderQuestion();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (step < activeQuestions.length - 1) {
+        step += 1;
+        renderQuestion();
+      } else {
+        showAnalysis();
+      }
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => showToast("报告已保存到有型档案"));
+
+    renderLearnTerms();
+    renderQuestion();
+    latestResult = buildResult();
+  </script>
+</body>
+</html>

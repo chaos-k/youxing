@@ -1,0 +1,41 @@
+.intro {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.diagnosis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.diagnosis-card {
+  padding: 28rpx;
+}
+
+.card-title {
+  display: block;
+  color: #27302d;
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.card-subtitle {
+  display: block;
+  margin-top: 12rpx;
+  color: #776d63;
+  line-height: 1.6;
+}
+
+.card-footer {
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.card-button {
+  width: 156rpx;
+  min-height: 72rpx;
+}

@@ -1,0 +1,28 @@
+<view class="page reports-page">
+  <view class="topline">
+    <view>
+      <text class="brand">报告</text>
+      <text class="muted intro">{{reports.length}} 份已保存</text>
+    </view>
+    <button class="clear-button" bindtap="clearAll">清空</button>
+  </view>
+
+  <view wx:if="{{reports.length}}" class="report-list">
+    <view class="report-card panel" wx:for="{{reports}}" wx:key="id" data-id="{{item.id}}" bindtap="openReport">
+      <view class="report-card-head">
+        <text class="report-card-title">{{item.title}}</text>
+        <text class="report-card-time">{{item.createdAt}}</text>
+      </view>
+      <text class="report-card-summary">{{item.summary}}</text>
+      <view class="tag-row report-tags">
+        <text class="tag" wx:for="{{item.keywords}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty panel">
+    <text class="empty-title">还没有报告</text>
+    <text class="empty-copy">先完成一次诊断。</text>
+    <button class="primary-button empty-button" bindtap="startDiagnosis">去诊断</button>
+  </view>
+</view>

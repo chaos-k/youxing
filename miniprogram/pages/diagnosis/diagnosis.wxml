@@ -1,0 +1,23 @@
+<view class="page diagnosis-page">
+  <view class="topline">
+    <view>
+      <text class="brand">诊断</text>
+      <text class="muted intro">选择一个入口，系统会按年龄人群调整题目。</text>
+    </view>
+  </view>
+
+  <view class="diagnosis-list">
+    <view class="diagnosis-card panel" wx:for="{{cards}}" wx:key="type">
+      <view>
+        <text class="card-title">{{item.title}}</text>
+        <text class="card-subtitle">{{item.subtitle}}</text>
+      </view>
+      <view class="card-footer">
+        <view class="tag-row">
+          <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+        </view>
+        <button class="secondary-button card-button" data-type="{{item.type}}" bindtap="start">开始</button>
+      </view>
+    </view>
+  </view>
+</view>

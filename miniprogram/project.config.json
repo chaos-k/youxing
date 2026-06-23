@@ -1,0 +1,23 @@
+{
+  "description": "有型 - 问卷诊断型穿搭微信小程序",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "enhance": true,
+    "showShadowRootInWxmlPanel": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.7.0",
+  "appid": "touristappid",
+  "projectname": "youxing-miniprogram",
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
+}

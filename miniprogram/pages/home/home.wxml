@@ -1,0 +1,45 @@
+<view class="page home-page">
+  <view class="topline">
+    <view>
+      <text class="brand">有型</text>
+      <text class="home-subtitle">按人群、场景和形象特征生成穿搭建议</text>
+    </view>
+  </view>
+
+  <view class="main-panel panel">
+    <view class="main-copy">
+      <text class="main-title">今天怎么穿？</text>
+      <text class="main-desc">先选择性别表达和年龄阶段，再根据脸型、体型、肤色、场景输出更具体的建议。</text>
+    </view>
+    <button class="primary-button" bindtap="startQuick">开始诊断</button>
+  </view>
+
+  <view class="tag-row trend-row">
+    <text class="tag" wx:for="{{trendTags}}" wx:key="*this">{{item}}</text>
+  </view>
+
+  <view class="section-title">常用入口</view>
+  <view class="entry-grid">
+    <view class="entry-card panel" wx:for="{{entries}}" wx:key="type" data-type="{{item.type}}" bindtap="openEntry">
+      <text class="entry-title">{{item.title}}</text>
+      <text class="entry-meta">{{item.meta}}</text>
+      <text class="entry-action">开始</text>
+    </view>
+  </view>
+
+  <view class="section-title">最近报告</view>
+  <view wx:if="{{latestReport}}" class="latest-card panel" bindtap="openLatest">
+    <view>
+      <text class="latest-title">{{latestReport.title}}</text>
+      <text class="latest-time">{{latestReport.createdAt}}</text>
+    </view>
+    <view class="tag-row latest-tags">
+      <text class="tag" wx:for="{{latestReport.keywords}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <view wx:else class="empty panel">
+    <text class="empty-title">暂无报告</text>
+    <text class="empty-copy">完成一次诊断后会出现在这里。</text>
+  </view>
+</view>

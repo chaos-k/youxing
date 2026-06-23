@@ -1,0 +1,56 @@
+<view class="page result-page" wx:if="{{report}}">
+  <view class="report-head panel">
+    <text class="report-kicker">{{report.sceneLabel}}</text>
+    <text class="report-title">{{report.title}}</text>
+    <text class="report-summary">{{report.summary}}</text>
+    <view class="tag-row keyword-row">
+      <text class="tag" wx:for="{{report.keywords}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">画像标签</view>
+  <view class="tag-row profile-tags">
+    <text class="tag" wx:for="{{report.profileTags}}" wx:key="*this">{{item}}</text>
+  </view>
+
+  <view class="section-title">完整搭配</view>
+  <view class="panel outfit-panel">
+    <view class="outfit-item" wx:for="{{report.outfit}}" wx:key="*this">
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">色彩</view>
+  <view class="panel color-panel">
+    <view class="swatch-item" wx:for="{{report.colorPalette}}" wx:key="name">
+      <view class="swatch" style="background-color: {{item.hex}};"></view>
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">建议</view>
+  <view class="advice-list">
+    <view class="panel advice-card" wx:for="{{report.sections}}" wx:key="title">
+      <text class="advice-title">{{item.title}}</text>
+      <view class="pill-row">
+        <text class="pill" wx:for="{{item.recommend}}" wx:for-item="rec" wx:key="*this">{{rec}}</text>
+      </view>
+      <text class="advice-reason">{{item.reason}}</text>
+      <view class="avoid-row" wx:if="{{item.avoid.length}}">
+        <text class="avoid-label">避开</text>
+        <text class="avoid-text">{{item.avoidText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-title">本次避雷</view>
+  <view class="panel avoid-panel">
+    <text class="avoid-tag" wx:for="{{report.avoidAdvice}}" wx:key="*this">{{item}}</text>
+  </view>
+
+  <view class="result-actions">
+    <button class="ghost-button" bindtap="copyReport">复制</button>
+    <button class="secondary-button" bindtap="rerun">重测</button>
+    <button class="primary-button" bindtap="saveAgain">保存</button>
+  </view>
+</view>

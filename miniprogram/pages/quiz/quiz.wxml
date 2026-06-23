@@ -1,0 +1,34 @@
+<view class="page quiz-page">
+  <view class="quiz-head">
+    <view>
+      <text class="quiz-type">{{diagnosisName}}</text>
+      <text class="quiz-count">{{progressText}}</text>
+    </view>
+    <view class="progress-track">
+      <view class="progress-bar" style="width: {{progressWidth}}%;"></view>
+    </view>
+  </view>
+
+  <view class="question-panel panel" wx:if="{{currentQuestion}}">
+    <text class="question-title">{{currentQuestion.title}}</text>
+    <view class="choice-grid">
+      <view
+        class="choice {{currentSelected == item.value ? 'choice-active' : ''}}"
+        wx:for="{{currentQuestion.options}}"
+        wx:key="value"
+        data-key="{{currentQuestion.id}}"
+        data-value="{{item.value}}"
+        bindtap="selectOption"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="quiz-actions">
+    <button class="ghost-button action-button" bindtap="prevQuestion">返回</button>
+    <button class="primary-button action-button" bindtap="nextQuestion">
+      {{currentIndex >= questions.length - 1 ? '生成报告' : '下一题'}}
+    </button>
+  </view>
+</view>
